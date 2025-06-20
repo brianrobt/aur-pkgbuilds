@@ -1,0 +1,19 @@
+pkgbase = python-hunspell
+	pkgdesc = Python bindings for the Hunspell spellchecker engine
+	pkgver = 0.5.5
+	pkgrel = 1
+	url = https://github.com/pyhunspell/pyhunspell
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = gcc-libs
+	depends = glibc
+	depends = hunspell
+	provides = python-hunspell
+	source = pyhunspell-0.5.5.tar.gz::https://github.com/pyhunspell/pyhunspell/archive/refs/tags/0.5.5.tar.gz
+	sha256sums = 021f2b713ebf1af972655b7f7a7669e96d8e2c59f4c984164b3fc1b7b5e2a51c
+
+pkgname = python-hunspell

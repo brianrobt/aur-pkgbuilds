@@ -1,0 +1,347 @@
+Starting pull operation for all repositories...
+Fri Jun 20 12:39:49 CDT 2025
+===========================================
+
+[1;33mProcessing: openmohaa[0m
+Directory: /Users/brian/workspace/personal/aur-pkgbuilds/openmohaa
+Current branch: master
+Fetching latest changes...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Pulling latest changes from origin/master...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[0;32m✓ Successfully updated openmohaa[0m
+
+[1;33mProcessing: proton-pass-bin[0m
+Directory: /Users/brian/workspace/personal/aur-pkgbuilds/proton-pass-bin
+Current branch: master
+Fetching latest changes...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Pulling latest changes from origin/master...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[0;32m✓ Successfully updated proton-pass-bin[0m
+
+[1;33mProcessing: openmohaa-git[0m
+Directory: /Users/brian/workspace/personal/aur-pkgbuilds/openmohaa-git
+Current branch: master
+Fetching latest changes...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Pulling latest changes from origin/master...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[0;32m✓ Successfully updated openmohaa-git[0m
+
+[1;33mProcessing: python-npyscreen[0m
+Directory: /Users/brian/workspace/personal/aur-pkgbuilds/python-npyscreen
+Current branch: master
+Fetching latest changes...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Pulling latest changes from origin/master...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[0;32m✓ Successfully updated python-npyscreen[0m
+
+[1;33mProcessing: gnome-shell-extension-panel-osd[0m
+Directory: /Users/brian/workspace/personal/aur-pkgbuilds/gnome-shell-extension-panel-osd
+Current branch: master
+Fetching latest changes...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Pulling latest changes from origin/master...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[0;32m✓ Successfully updated gnome-shell-extension-panel-osd[0m
+
+[1;33mProcessing: python-jproperties[0m
+Directory: /Users/brian/workspace/personal/aur-pkgbuilds/python-jproperties
+Current branch: master
+Fetching latest changes...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Pulling latest changes from origin/master...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[0;32m✓ Successfully updated python-jproperties[0m
+
+[1;33mProcessing: kpeople5[0m
+Directory: /Users/brian/workspace/personal/aur-pkgbuilds/kpeople5
+Current branch: master
+Fetching latest changes...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Pulling latest changes from origin/master...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[0;32m✓ Successfully updated kpeople5[0m
+
+[1;33mProcessing: stable-diffusion-cpp-vulkan-git[0m
+Directory: /Users/brian/workspace/personal/aur-pkgbuilds/stable-diffusion-cpp-vulkan-git
+Current branch: master
+Fetching latest changes...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Pulling latest changes from origin/master...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[0;32m✓ Successfully updated stable-diffusion-cpp-vulkan-git[0m
+
+[1;33mProcessing: python-pytest-freezegun[0m
+Directory: /Users/brian/workspace/personal/aur-pkgbuilds/python-pytest-freezegun
+Current branch: master
+Fetching latest changes...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Pulling latest changes from origin/master...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[0;32m✓ Successfully updated python-pytest-freezegun[0m
+
+[1;33mProcessing: python-conda[0m
+Directory: /Users/brian/workspace/personal/aur-pkgbuilds/python-conda
+Current branch: master
+Fetching latest changes...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Pulling latest changes from origin/master...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[0;32m✓ Successfully updated python-conda[0m
+
+[1;33mProcessing: rapidyaml[0m
+Directory: /Users/brian/workspace/personal/aur-pkgbuilds/rapidyaml
+Current branch: master
+Fetching latest changes...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Pulling latest changes from origin/master...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[0;32m✓ Successfully updated rapidyaml[0m
+
+[1;33mProcessing: python-hunspell[0m
+Directory: /Users/brian/workspace/personal/aur-pkgbuilds/python-hunspell
+Current branch: master
+Fetching latest changes...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Pulling latest changes from origin/master...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[0;32m✓ Successfully updated python-hunspell[0m
+
+[1;33mProcessing: python-conda-libmamba-solver[0m
+Directory: /Users/brian/workspace/personal/aur-pkgbuilds/python-conda-libmamba-solver
+Current branch: master
+Fetching latest changes...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Pulling latest changes from origin/master...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[0;32m✓ Successfully updated python-conda-libmamba-solver[0m
+
+[1;33mProcessing: arduino-avr-core[0m
+Directory: /Users/brian/workspace/personal/aur-pkgbuilds/arduino-avr-core
+Current branch: master
+Fetching latest changes...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Pulling latest changes from origin/master...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[0;32m✓ Successfully updated arduino-avr-core[0m
+
+[1;33mProcessing: python-libmamba[0m
+Directory: /Users/brian/workspace/personal/aur-pkgbuilds/python-libmamba
+Current branch: master
+Fetching latest changes...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Pulling latest changes from origin/master...
+error: cannot pull with rebase: You have unstaged changes.
+error: please commit or stash them.
+[0;32m✓ Successfully updated python-libmamba[0m
+
+[1;33mProcessing: micromamba[0m
+Directory: /Users/brian/workspace/personal/aur-pkgbuilds/micromamba
+Current branch: master
+Fetching latest changes...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Pulling latest changes from origin/master...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[0;32m✓ Successfully updated micromamba[0m
+
+[1;33mProcessing: python-typed-ast[0m
+Directory: /Users/brian/workspace/personal/aur-pkgbuilds/python-typed-ast
+Current branch: master
+Fetching latest changes...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Pulling latest changes from origin/master...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[0;32m✓ Successfully updated python-typed-ast[0m
+
+[1;33mProcessing: outwiker[0m
+Directory: /Users/brian/workspace/personal/aur-pkgbuilds/outwiker
+Current branch: master
+Fetching latest changes...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Pulling latest changes from origin/master...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[0;32m✓ Successfully updated outwiker[0m
+
+[1;33mProcessing: python-abydos[0m
+Directory: /Users/brian/workspace/personal/aur-pkgbuilds/python-abydos
+Current branch: master
+Fetching latest changes...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Pulling latest changes from origin/master...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[0;32m✓ Successfully updated python-abydos[0m
+
+[1;33mProcessing: rot8-git[0m
+Directory: /Users/brian/workspace/personal/aur-pkgbuilds/rot8-git
+Current branch: master
+Fetching latest changes...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Pulling latest changes from origin/master...
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[0;32m✓ Successfully updated rot8-git[0m
+
+===========================================
+Pull operation completed!
+Total repositories: 20
+[0;32mSuccessful pulls: 20[0m
+[0;31mFailed pulls: 0[0m
+Fri Jun 20 12:39:50 CDT 2025

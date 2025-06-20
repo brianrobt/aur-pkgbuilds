@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../../aur/aur-version-checker"
+		},
+		{
+			"path": "."
+		},
+		{
+			"path": "../../aur/archlinux-aurdev-docker-image"
+		}
+	],
+	"settings": {}
+}

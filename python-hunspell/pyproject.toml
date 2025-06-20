@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hunspell"
+version = "0.5.5"
+description = "Module for the Hunspell spellchecker engine"
+long_description = "file: README.md"
+author = "Benoît Latinier"
+author_email = "benoit@latinier.fr"
+url = "http://github.com/blatinier/pyhunspell"
+license = { text = "LGPLv3" }
+
+[project.urls]
+Homepage = "http://github.com/blatinier/pyhunspell"
+
+[tool.setuptools]
+ext_modules = [
+    {
+        name = "hunspell",
+        sources = ["hunspell.cpp"],
+        language = "c++",
+        define_macros = [("_LINUX", null)],
+        libraries = ["hunspell"],
+        include_dirs = ["/usr/include/hunspell"],
+        extra_compile_args = ["-Wall"]
+    }
+]

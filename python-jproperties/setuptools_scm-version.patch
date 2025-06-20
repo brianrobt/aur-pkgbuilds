@@ -1,0 +1,12 @@
+diff --color -ura --color src/jproperties-2.1.2/setup.py src/jproperties-2.1.2-new/setup.py
+--- src/jproperties-2.1.2/setup.py	2024-07-21 15:12:04.000000000 -0500
++++ src/jproperties-2.1.2-new/setup.py	2025-01-17 09:58:47.785319366 -0600
+@@ -27,7 +27,7 @@
+     python_requires='>= 2.7',
+     install_requires=["six ~= 1.13"],
+     setup_requires=[
+-        "setuptools_scm ~= 3.3"
++        "setuptools_scm >= 3.3"
+     ],
+     classifiers=[
+         "Development Status :: 5 - Production/Stable",

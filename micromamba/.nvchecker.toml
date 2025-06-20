@@ -1,0 +1,4 @@
+[micromamba]
+source = "github"
+github = "mamba-org/mamba"
+use_latest_release = "True"

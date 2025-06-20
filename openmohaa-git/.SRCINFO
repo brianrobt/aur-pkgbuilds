@@ -1,0 +1,22 @@
+pkgbase = openmohaa-git
+	pkgdesc = Open re-implementation of Medal of Honor: Allied Assault
+	pkgver = 0.81.1.r431.g3d1741e
+	pkgrel = 1
+	url = https://github.com/openmoh/openmohaa
+	arch = i686
+	arch = x86_64
+	license = GPL2
+	makedepends = cmake
+	makedepends = git
+	makedepends = ninja
+	depends = openal
+	depends = sdl2
+	depends = openjpeg2
+	depends = libmad
+	depends = hicolor-icon-theme
+	conflicts = openmohaa
+	options = !lto
+	source = openmohaa::git+https://github.com/openmoh/openmohaa.git
+	sha256sums = SKIP
+
+pkgname = openmohaa-git
