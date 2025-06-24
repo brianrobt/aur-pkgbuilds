@@ -27,14 +27,14 @@ create_build_dir() {
 
 copy_package_files() {
     local package_name="$1"
-    local source_dir="$SCRIPT_DIR/$package_name"
+    local source_dir="$REPO_ROOT/$package_name"
     local dest_dir="$BUILD_DIR/$package_name"
-    
+
     if [[ ! -d "$source_dir" ]]; then
         echo "Warning: Source directory $source_dir does not exist for package $package_name"
         return 1
     fi
-    
+
     mkdir -p "$dest_dir"
     cp -r "$source_dir"/* "$dest_dir/"
     echo "Copied $package_name files to $dest_dir"
@@ -45,11 +45,11 @@ main() {
         echo "Error: repo_urls.txt not found at $REPO_URLS_FILE"
         exit 1
     fi
-    
+
     create_build_dir
-    
+
     echo "Processing packages from $REPO_URLS_FILE..."
-    
+
     while IFS=': ' read -r line_num package_name repo_url; do
         if [[ -n "$package_name" && -n "$repo_url" ]]; then
             echo "Processing package: $package_name"
@@ -61,11 +61,11 @@ main() {
             echo
         fi
     done < <(grep -n '^[0-9]*\. ' "$REPO_URLS_FILE" | sed 's/^\([0-9]*\):\([0-9]*\)\. \([^:]*\): \(.*\)$/\1 \3 \4/')
-    
+
     echo "All packages prepared in build directory: $BUILD_DIR"
     echo "Directory contents:"
     ls -la "$BUILD_DIR"
-    
+
     echo
     echo "To publish changes, you can now:"
     echo "1. Navigate to each package directory in $BUILD_DIR"
