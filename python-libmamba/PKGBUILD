@@ -3,7 +3,7 @@
 # Contributor: Ke Liu <specter119@gmail.com>
 
 pkgname=python-libmamba
-pkgver=2.1.1
+pkgver=2.0.6
 _name=mamba-$pkgver
 pkgrel=1
 pkgdesc="The fast cross-platform package manager"
@@ -42,7 +42,7 @@ conflicts=('micromamba')
 #options=(!emptydirs)
 #backup=(etc/conda/condarc)
 source=("$_name.tar.gz::$url/archive/refs/tags/$pkgver.tar.gz")
-sha512sums=('99777c9711af0f36731aa3be9fd89cd730ab1878d4c9485fb0d5d39464ee13e29d6e8a5f4ecb4cbb0149c9a2962d91cb212e9a052536283b46a9e1776ed6899f')
+sha512sums=('54d5203bb1f7e2fca7b9500f3dc6fdf4c1a48f8fcfa4a08a925348d49796956367262066e75ae91922561e176a72ea1a916999d8c8ab9c501e50c13cac0e98af')
 
 build() {
   cd "$srcdir/$_name"

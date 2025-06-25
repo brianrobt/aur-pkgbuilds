@@ -1,2 +1,8 @@
 build/
 *.backup
+*/temp_clone
+
+# Dockerfiles for packages I don't maintain
+proton-pass-bin/Dockerfile
+openmohaa/Dockerfile
+python-libmamba/Dockerfile
