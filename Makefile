@@ -1,4 +1,4 @@
-.PHONY: help pull-all clean clone
+.PHONY: help pull-all clean clone aur-build
 
 # Default values
 CLEAN ?= false
@@ -11,6 +11,8 @@ help:
 	@echo "  clone PKG     - Clone AUR repository for package PKG"
 	@echo "                  Optional: CLEAN=true to remove temp directories"
 	@echo "                  Example: make clone PKG=python-micromamba CLEAN=true"
+	@echo "  aur-build PKG - Clone, build Docker image, and run container for package PKG"
+	@echo "                  Example: make aur-build PKG=python-micromamba"
 	@echo "  help          - Show this help message"
 
 # Pull all AUR repositories
@@ -58,3 +60,24 @@ clone-all: clean
 	@echo "Optional: CLEAN=true to remove temp directories"
 	@echo "Cloning all AUR repositories..."
 	@./scripts/clone_all_packages.sh $(CLEAN)
+
+# Build and run AUR package in Docker
+aur-build:
+	@if [ -z "$(PKG)" ]; then \
+		echo "Error: Package name required. Usage: make aur-build PKG=<package-name>"; \
+		echo "Example: make aur-build PKG=proton-pass-bin"; \
+		exit 1; \
+	fi
+	@echo "Step 1: Cloning AUR repository for $(PKG)..."
+	@$(MAKE) clone PKG=$(PKG)
+	@echo "Step 2: Checking for Dockerfile and building image..."
+	@if [ -f "$(PKG)/Dockerfile" ]; then \
+		echo "Dockerfile found. Building Docker image $(PKG)-aur..."; \
+		cd "$(PKG)" && docker build -t "$(PKG)-aur" .; \
+		echo "Step 3: Running Docker container..."; \
+		docker run -it "$(PKG)-aur"; \
+	else \
+		echo "No Dockerfile found in $(PKG)/ directory."; \
+		echo "Skipping Docker build and run steps."; \
+		echo "You can manually build and run the package if needed."; \
+	fi
