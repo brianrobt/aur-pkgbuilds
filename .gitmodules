@@ -1,0 +1,3 @@
+[submodule "htmlhint/htmlhint-aur"]
+	path = htmlhint/htmlhint-aur
+	url = ssh://aur@aur.archlinux.org/htmlhint.git
