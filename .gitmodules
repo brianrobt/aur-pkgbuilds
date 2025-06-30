@@ -1,3 +1,69 @@
 [submodule "htmlhint/htmlhint-aur"]
 	path = htmlhint/htmlhint-aur
 	url = ssh://aur@aur.archlinux.org/htmlhint.git
+[submodule "arduino-avr-core/arduino-avr-core-aur"]
+	path = arduino-avr-core/arduino-avr-core-aur
+	url = ssh://aur@aur.archlinux.org/arduino-avr-core.git
+[submodule "gnome-shell-extension-panel-osd/gnome-shell-extension-panel-osd-aur"]
+	path = gnome-shell-extension-panel-osd/gnome-shell-extension-panel-osd-aur
+	url = ssh://aur@aur.archlinux.org/gnome-shell-extension-panel-osd.git
+[submodule "kpeople5/kpeople5-aur"]
+	path = kpeople5/kpeople5-aur
+	url = ssh://aur@aur.archlinux.org/kpeople5.git
+[submodule "micromamba/micromamba-aur"]
+	path = micromamba/micromamba-aur
+	url = ssh://aur@aur.archlinux.org/micromamba.git
+[submodule "nmctl/nmctl-aur"]
+	path = nmctl/nmctl-aur
+	url = ssh://aur@aur.archlinux.org/nmctl.git
+[submodule "openmohaa/openmohaa-aur"]
+	path = openmohaa/openmohaa-aur
+	url = ssh://aur@aur.archlinux.org/openmohaa.git
+[submodule "openmohaa-git/openmohaa-git-aur"]
+	path = openmohaa-git/openmohaa-git-aur
+	url = ssh://aur@aur.archlinux.org/openmohaa-git.git
+[submodule "outwiker/outwiker-aur"]
+	path = outwiker/outwiker-aur
+	url = ssh://aur@aur.archlinux.org/outwiker.git
+[submodule "proton-pass-bin/proton-pass-bin-aur"]
+	path = proton-pass-bin/proton-pass-bin-aur
+	url = ssh://aur@aur.archlinux.org/proton-pass-bin.git
+[submodule "python-abydos/python-abydos-aur"]
+	path = python-abydos/python-abydos-aur
+	url = ssh://aur@aur.archlinux.org/python-abydos.git
+[submodule "python-conda/python-conda-aur"]
+	path = python-conda/python-conda-aur
+	url = ssh://aur@aur.archlinux.org/python-conda.git
+[submodule "python-conda-libmamba-solver/python-conda-libmamba-solver-aur"]
+	path = python-conda-libmamba-solver/python-conda-libmamba-solver-aur
+	url = ssh://aur@aur.archlinux.org/python-conda-libmamba-solver.git
+[submodule "python-hunspell/python-hunspell-aur"]
+	path = python-hunspell/python-hunspell-aur
+	url = ssh://aur@aur.archlinux.org/python-hunspell.git
+[submodule "python-jproperties/python-jproperties-aur"]
+	path = python-jproperties/python-jproperties-aur
+	url = ssh://aur@aur.archlinux.org/python-jproperties.git
+[submodule "python-libmamba/python-libmamba-aur"]
+	path = python-libmamba/python-libmamba-aur
+	url = ssh://aur@aur.archlinux.org/python-libmamba.git
+[submodule "python-npyscreen/python-npyscreen-aur"]
+	path = python-npyscreen/python-npyscreen-aur
+	url = ssh://aur@aur.archlinux.org/python-npyscreen.git
+[submodule "python-pytest-freezegun/python-pytest-freezegun-aur"]
+	path = python-pytest-freezegun/python-pytest-freezegun-aur
+	url = ssh://aur@aur.archlinux.org/python-pytest-freezegun.git
+[submodule "python-typed-ast/python-typed-ast-aur"]
+	path = python-typed-ast/python-typed-ast-aur
+	url = ssh://aur@aur.archlinux.org/python-typed-ast.git
+[submodule "rapidyaml/rapidyaml-aur"]
+	path = rapidyaml/rapidyaml-aur
+	url = ssh://aur@aur.archlinux.org/rapidyaml.git
+[submodule "rot8-git/rot8-git-aur"]
+	path = rot8-git/rot8-git-aur
+	url = ssh://aur@aur.archlinux.org/rot8-git.git
+[submodule "stable-diffusion-cpp-vulkan-git/stable-diffusion-cpp-vulkan-git-aur"]
+	path = stable-diffusion-cpp-vulkan-git/stable-diffusion-cpp-vulkan-git-aur
+	url = ssh://aur@aur.archlinux.org/stable-diffusion.cpp-vulkan-git.git
+[submodule "netclient/netclient-aur"]
+	path = netclient/netclient-aur
+	url = ssh://aur@aur.archlinux.org/netclient.git
