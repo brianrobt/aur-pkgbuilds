@@ -1,7 +1,9 @@
 arduino-avr-core: ssh://aur@aur.archlinux.org/arduino-avr-core.git
 gnome-shell-extension-panel-osd: ssh://aur@aur.archlinux.org/gnome-shell-extension-panel-osd.git
+htmlhint: ssh://aur@aur.archlinux.org/htmlhint.git
 kpeople5: ssh://aur@aur.archlinux.org/kpeople5.git
 micromamba: ssh://aur@aur.archlinux.org/micromamba.git
+netclient: ssh://aur@aur.archlinux.org/netclient.git
 nmctl: ssh://aur@aur.archlinux.org/nmctl.git
 openmohaa: ssh://aur@aur.archlinux.org/openmohaa.git
 openmohaa-git: ssh://aur@aur.archlinux.org/openmohaa-git.git
