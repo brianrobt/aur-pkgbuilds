@@ -1,3 +1,4 @@
+alist: ssh://aur@aur.archlinux.org/alist.git
 arduino-avr-core: ssh://aur@aur.archlinux.org/arduino-avr-core.git
 gnome-shell-extension-panel-osd: ssh://aur@aur.archlinux.org/gnome-shell-extension-panel-osd.git
 htmlhint: ssh://aur@aur.archlinux.org/htmlhint.git

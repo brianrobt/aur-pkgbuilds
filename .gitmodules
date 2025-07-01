@@ -67,3 +67,6 @@
 [submodule "netclient/netclient-aur"]
 	path = netclient/netclient-aur
 	url = ssh://aur@aur.archlinux.org/netclient.git
+[submodule "alist/alist-aur"]
+	path = alist/alist-aur
+	url = ssh://aur@aur.archlinux.org/alist.git
