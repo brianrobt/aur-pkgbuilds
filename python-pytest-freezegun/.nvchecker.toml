@@ -1,3 +1,0 @@
-[python-pytest-freezegun]
-source = "git"
-git = "https://github.com/ktosiek/pytest-freezegun.git"
