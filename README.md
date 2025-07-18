@@ -20,6 +20,7 @@ This repository contains build scripts and configuration files for 20+ packages 
 - **Submodule Management**: Synchronized git submodules for each AUR package
 - **Makefile Automation**: Simple commands for common maintenance tasks
 - **Batch Operations**: Clone, build, and update multiple packages at once
+- **GitHub Actions**: Automated git package updates with AUR integration
 
 ## Usage: Makefile Commands
 
@@ -117,9 +118,39 @@ You can also call the scripts in `scripts/` directly for advanced usage:
 
 # Update all AUR repositories
 ./scripts/pull_all_repos.sh
+
+# Test git package updates locally
+./scripts/test-git-update.sh <package-name>
+
+# Setup AUR SSH keys for GitHub Actions
+./scripts/setup-aur-ssh.sh
 ```
 
 See the Makefile or run `make help` for more details.
+
+## GitHub Actions
+
+This repository includes automated workflows for maintaining git packages:
+
+### Automated Git Package Updates
+
+The `update-git-packages.yml` workflow automatically:
+- Builds git packages in Docker containers
+- Updates PKGBUILD and .SRCINFO files with latest versions
+- Commits changes to this repository
+- Pushes updates to AUR (if configured)
+
+**Setup:**
+1. Run `./scripts/setup-aur-ssh.sh` to generate SSH keys
+2. Add the public key to your AUR account
+3. Add `AUR_USERNAME` and `AUR_SSH_PRIVATE_KEY` secrets to GitHub
+4. The workflow runs daily at 2 AM UTC
+
+**Manual Execution:**
+- Go to Actions tab → "Update Git Packages" → "Run workflow"
+- Optionally specify a single package name
+
+For detailed setup instructions, see [`.github/workflows/README.md`](.github/workflows/README.md).
 
 ## Contributing
 
