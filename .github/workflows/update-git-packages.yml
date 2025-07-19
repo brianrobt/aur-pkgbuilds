@@ -23,12 +23,6 @@ jobs:
         package: ${{ fromJson(format('["{0}"]', github.event.inputs.package || 'all')) }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-          token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Setup SSH for AUR
         if: env.AUR_USERNAME != ''
         run: |
@@ -41,6 +35,12 @@ jobs:
             IdentityFile ~/.ssh/aur_key
             User $AUR_USERNAME
           EOF
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Find git packages
         id: find-packages
