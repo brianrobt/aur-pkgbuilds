@@ -122,8 +122,8 @@ jobs:
       - name: Commit and push changes
         if: steps.check-changes.outputs.changes == 'true'
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config --local user.email "brianrobt@pm.me"
+          git config --local user.name "Brian Thompson"
 
           # Add all changed files
           git add -A
