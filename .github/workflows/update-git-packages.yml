@@ -78,8 +78,8 @@ jobs:
 
             # Build the Docker image
             cd "$PKG"
-            docker pull brianrobt/archlinux-aur-dev:latest
-            docker build --platform=linux/amd64 -t "$PKG-aur" .
+            docker pull brianrobt/archlinux-aur-dev:v1.2.1
+            docker build -t "$PKG-aur" .
 
             # Run the container to update PKGBUILD and .SRCINFO
             CONTAINER_ID=$(docker run -d "$PKG-aur" tail -f /dev/null)
