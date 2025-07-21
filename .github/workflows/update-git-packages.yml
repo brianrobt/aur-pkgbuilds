@@ -39,7 +39,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          submodules: recursive
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Find git packages
@@ -74,6 +73,9 @@ jobs:
 
             echo "Building and updating $PKG..."
 
+            # Extract AUR package name from PKGBUILD for dynamic cloning
+            AUR_PKG_NAME=$(grep '^pkgname=' "$PKG/PKGBUILD" | cut -d'=' -f2 | tr -d "'\"")
+
             # Build the Docker image
             cd "$PKG"
             docker build -t "$PKG-aur" .
@@ -101,7 +103,7 @@ jobs:
 
             cd ..
 
-            echo "Updated $PKG"
+            echo "Updated $PKG (AUR package: $AUR_PKG_NAME)"
           done
 
       - name: Check for changes
@@ -177,7 +179,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
 
           if [ "${{ steps.check-changes.outputs.changes }}" = "true" ]; then
-            echo "✅ **Updates Applied**" >> $GITHUB_STEP_SUMMARY
+            echo "**Updates Applied**" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "The following packages were updated:" >> $GITHUB_STEP_SUMMARY
             git diff --name-only | grep -E '^[^/]+/(PKGBUILD|\.SRCINFO)$' | cut -d'/' -f1 | sort -u | while read PKG; do
@@ -186,13 +188,13 @@ jobs:
             echo "" >> $GITHUB_STEP_SUMMARY
 
             if [ "${{ env.AUR_USERNAME }}" != "" ]; then
-              echo "✅ **AUR Updates**" >> $GITHUB_STEP_SUMMARY
+              echo "**AUR Updates**" >> $GITHUB_STEP_SUMMARY
               echo "Changes were also pushed to the AUR repositories." >> $GITHUB_STEP_SUMMARY
             else
-              echo "⚠️ **AUR Updates Skipped**" >> $GITHUB_STEP_SUMMARY
+              echo "**AUR Updates Skipped**" >> $GITHUB_STEP_SUMMARY
               echo "AUR credentials not configured. Changes were only committed to this repository." >> $GITHUB_STEP_SUMMARY
             fi
           else
-            echo "ℹ️ **No Updates Needed**" >> $GITHUB_STEP_SUMMARY
+            echo "**No Updates Needed**" >> $GITHUB_STEP_SUMMARY
             echo "All git packages are up to date." >> $GITHUB_STEP_SUMMARY
           fi
