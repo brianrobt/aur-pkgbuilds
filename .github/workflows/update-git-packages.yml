@@ -78,6 +78,7 @@ jobs:
 
             # Build the Docker image
             cd "$PKG"
+            docker pull brianrobt/archlinux-aur-dev:latest
             docker build --platform=linux/amd64 -t "$PKG-aur" .
 
             # Run the container to update PKGBUILD and .SRCINFO
