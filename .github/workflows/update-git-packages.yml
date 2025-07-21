@@ -78,7 +78,7 @@ jobs:
 
             # Build the Docker image
             cd "$PKG"
-            docker build -t "$PKG-aur" .
+            docker build --platform=linux/amd64 -t "$PKG-aur" .
 
             # Run the container to update PKGBUILD and .SRCINFO
             CONTAINER_ID=$(docker run -d "$PKG-aur" tail -f /dev/null)
