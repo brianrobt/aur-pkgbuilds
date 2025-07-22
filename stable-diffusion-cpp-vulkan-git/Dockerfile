@@ -19,4 +19,4 @@ RUN yay -S --noconfirm \
     vulkan-headers \
     shaderc
 
-RUN makepkg -si --noconfirm
+RUN makepkg -sif --noconfirm

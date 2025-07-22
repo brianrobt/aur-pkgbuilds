@@ -11,4 +11,4 @@ RUN yay -S --noconfirm \
   cargo
 
 # Build the package
-# RUN makepkg -si
+RUN makepkg -sif --noconfirm
