@@ -1,4 +1,8 @@
-FROM brianrobt/archlinux-aur-dev:latest
+# Specify target platform architecture
+# Use linux/amd64 for x86_64 systems, linux/arm64 for ARM64 systems
+# Uncomment the appropriate line for your target architecture:
+# FROM --platform=linux/amd64 brianrobt/archlinux-aur-dev:latest
+FROM --platform=linux/arm64 brianrobt/archlinux-aur-dev:latest
 
 # Copy local AUR package files to the container
 COPY --chown=builder:builder .SRCINFO PKGBUILD ./
@@ -16,4 +20,4 @@ RUN git clone ssh://aur@aur.archlinux.org/proton-pass-bin.git
 USER builder
 
 # Build the package
-RUN makepkg -si --noconfirm
+RUN makepkg -sif --noconfirm
