@@ -7,7 +7,7 @@ pkgname=(
   rapidyaml
   python-rapidyaml
 )
-pkgver=0.9.0
+pkgver=0.9.0 # renovate: datasource=github-tags depName=biojppm/rapidyaml
 pkgrel=1
 pkgdesc='A library to parse and emit YAML, and do it fast'
 arch=(x86_64)
