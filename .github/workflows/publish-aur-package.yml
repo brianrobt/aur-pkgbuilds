@@ -1,0 +1,35 @@
+# Adapted from https://github.com/JamieMagee/aur-packages/blob/main/.github/workflows/publish.yml
+name: publish-aur-package
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '*/PKGBUILD'
+
+jobs:
+  publish-aur-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Find updated package
+        run: |
+          #!/usr/bin/env bash
+          set -euxo pipefail
+
+          echo "pkgbuild=$(git diff --name-only HEAD HEAD~1 "*/.SRCINFO" | head -1 | xargs dirname)" >> $GITHUB_ENV
+
+      - name: Publish package
+        uses: KSXGitHub/github-actions-deploy-aur@2ac5a4c1d7035885d46b10e3193393be8460b6f1 # v4.1.1
+        if: ${{ env.pkgbuild != '' }}
+        with:
+          pkgname: ${{ env.pkgbuild }}
+          pkgbuild: ${{ env.pkgbuild }}/PKGBUILD
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
