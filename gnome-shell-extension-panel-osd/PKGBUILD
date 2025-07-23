@@ -1,7 +1,7 @@
 # Maintainer: Tamás Barta < barta dot tamas dot d at gmail dot com >
 
 pkgname="gnome-shell-extension-panel-osd"
-pkgver=1.0
+pkgver=1.0 # renovate: datasource=gitlab-tags depName=jenslody/gnome-shell-extension-panel-osd
 pkgrel=2
 pkgdesc="Place gnome-shell notifications under the panel instead of above the message-tray."
 arch=("any")

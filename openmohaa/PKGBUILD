@@ -2,7 +2,7 @@
 # Maintainer: Self Denial <selfdenial at pm dot me>
 
 pkgname=openmohaa
-pkgver=0.81.1
+pkgver=0.81.1 # renovate: datasource=github-tags depName=openmoh/openmohaa
 pkgrel=2
 pkgdesc="Open re-implementation of Medal of Honor: Allied Assault "
 arch=('i686' 'x86_64')

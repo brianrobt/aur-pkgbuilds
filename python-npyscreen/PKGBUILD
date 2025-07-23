@@ -1,6 +1,6 @@
 # Maintainer: Václav Valíek <valicek1994@gmail.com>
 pkgname=python-npyscreen
-pkgver=4.10.5
+pkgver=4.10.5 # renovate: datasource=pypi depName=npyscreen
 pkgrel=1
 pkgdesc="A python widget library and application framework"
 arch=('any')

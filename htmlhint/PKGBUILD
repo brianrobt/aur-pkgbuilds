@@ -3,7 +3,7 @@
 
 _name=HTMLHint
 pkgname=htmlhint
-pkgver=1.6.3
+pkgver=1.6.3 # renovate: datasource=github-tags depName=htmlhint/HTMLHint
 pkgrel=1
 pkgdesc='Static Code Analysis Tool for your HTML'
 arch=('any')

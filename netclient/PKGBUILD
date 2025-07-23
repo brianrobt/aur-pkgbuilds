@@ -3,7 +3,7 @@
 # Contributor: matt kasun <matt at netmaker dot io>
 
 pkgname=netclient
-pkgver=1.0.0
+pkgver=1.0.0 # renovate: datasource=github-tags depName=gravitl/netclient
 pkgrel=1
 pkgdesc="Platform for modern, blazing fast wireguard virtual networks"
 arch=(x86_64)

@@ -1,7 +1,7 @@
 # Maintainer: Antonio Rojas <arojas@archlinux.org>
 
 pkgname=molequeue
-pkgver=0.9.0
+pkgver=0.9.0 # renovate: datasource=github-tags depName=OpenChemistry/molequeue
 pkgrel=4
 pkgdesc='Desktop integration of high performance computing resources'
 arch=(x86_64)

@@ -4,7 +4,7 @@
 
 pkgname=python-conda
 _name=${pkgname#python-}
-pkgver=25.5.1
+pkgver=25.5.1 # renovate: datasource=github-tags depName=conda/conda
 pkgrel=1
 pkgdesc="OS-agnostic, system-level binary package manager and ecosystem https://conda.io"
 arch=('any')
