@@ -3,7 +3,7 @@
 
 _name=kpeople
 pkgname=${_name}5
-pkgver=5.249.0 # renovate: datasource=github-tags depName=KDE/kpeople
+pkgver=5.116.0
 pkgrel=1
 pkgdesc='A library that provides access to all contacts and the people who hold them'
 arch=(x86_64)
