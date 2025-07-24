@@ -3,7 +3,7 @@
 # Contributor: Ke Liu <specter119@gmail.com>
 
 pkgname=python-libmamba
-pkgver=2024.12.12 # renovate: datasource=github-tags depName=mamba-org/mamba
+pkgver=2.0.6
 _name=mamba-$pkgver
 pkgrel=1
 pkgdesc="The fast cross-platform package manager"

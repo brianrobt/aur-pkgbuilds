@@ -4,7 +4,7 @@
 
 pkgname=micromamba
 _pkgname=${pkgname/micro/}
-pkgver=2024.12.12 # renovate: datasource=github-tags depName=mamba-org/mamba
+pkgver=2.3.0
 pkgrel=1
 pkgdesc="The fast cross-platform package manager"
 arch=(i686 x86_64)
