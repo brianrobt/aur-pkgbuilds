@@ -3,7 +3,7 @@
 
 pkgname=openmohaa
 pkgver=0.82.0 # renovate: datasource=github-tags depName=openmoh/openmohaa
-pkgrel=2
+pkgrel=1
 pkgdesc="Open re-implementation of Medal of Honor: Allied Assault "
 arch=('i686' 'x86_64')
 url="https://github.com/openmoh/openmohaa"
