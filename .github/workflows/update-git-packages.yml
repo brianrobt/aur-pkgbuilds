@@ -96,8 +96,8 @@ jobs:
           else
             echo "Changes detected in PKGBUILD or .SRCINFO:"
             git diff --name-only PKGBUILD .SRCINFO 2>/dev/null || true
-            git config --local user.email "brianrobt@pm.me"
-            git config --local user.name "Brian Thompson"
+            git config user.email "brianrobt@pm.me"
+            git config user.name "Brian Thompson"
 
             # Add only PKGBUILD and .SRCINFO files
             git add PKGBUILD .SRCINFO
@@ -118,6 +118,8 @@ jobs:
             cp .SRCINFO ../$PKG/.SRCINFO
 
             cd ..
+            git config user.email "brianrobt@pm.me"
+            git config user.name "Brian Thompson"
             git add -A
             git commit -m "build: release $PKG v$PKGVERREL"
             git push origin master
