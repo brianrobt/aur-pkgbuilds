@@ -43,6 +43,7 @@ jobs:
     needs: find-packages
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         package: ${{ fromJson(needs.find-packages.outputs.packages) }}
     steps:
