@@ -86,10 +86,10 @@ jobs:
               git add -A
 
               # Get pkgver value
-              PKGVER=$(grep "^pkgver=" $PKG/PKGBUILD | sed 's/pkgver=//')
+              PKGVER=$(grep "^pkgver=" PKGBUILD | sed 's/pkgver=//')
 
               # Get pkgrel value
-              PKGREL=$(grep "^pkgrel=" $PKG/PKGBUILD | sed 's/pkgrel=//')
+              PKGREL=$(grep "^pkgrel=" PKGBUILD | sed 's/pkgrel=//')
 
               PKGVERREL="$PKGVER-$PKGREL"
 
