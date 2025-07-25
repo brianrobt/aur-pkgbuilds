@@ -1,9 +1,9 @@
 name: Update Git Packages
 
 on:
-  # schedule:
-  #   # Run daily at 2 AM UTC
-  #   - cron: '0 2 * * *'
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
   workflow_dispatch:
     inputs:
       package:
@@ -16,13 +16,47 @@ env:
   AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
 
 jobs:
+  find-packages:
+    runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.get-packages.outputs.packages }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get git packages
+        id: get-packages
+        run: |
+          if [ "${{ github.event.inputs.package }}" != "" ]; then
+            # Use specific package if provided
+            PACKAGES='["${{ github.event.inputs.package }}"]'
+          else
+            # Find all directories ending with -git
+            PACKAGES=$(find . -maxdepth 1 -type d -name "*-git" -exec basename {} \; | jq -R -s -c 'split("\n")[:-1]')
+          fi
+          echo "packages=$PACKAGES" >> $GITHUB_OUTPUT
+          echo "Found packages: $PACKAGES"
+
   update-git-packages:
+    needs: find-packages
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        package: ${{ fromJson(format('["{0}"]', github.event.inputs.package || 'all')) }}
-
+        package: ${{ fromJson(needs.find-packages.outputs.packages) }}
     steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
       - name: Setup SSH for AUR
         if: env.AUR_USERNAME != ''
         run: |
@@ -41,98 +75,68 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Find git packages
-        id: find-packages
+      - name: Update git package
         run: |
-          if [ "${{ matrix.package }}" = "all" ]; then
-            # Find all directories ending with -git
-            PACKAGES=$(find . -maxdepth 1 -type d -name "*-git" -exec basename {} \; | sort)
-          else
-            # Use specific package if provided
-            PACKAGES="${{ matrix.package }}"
+          PKG="${{ matrix.package }}"
+
+          if [ ! -d "$PKG" ]; then
+            echo "Package directory $PKG not found, skipping..."
+            exit 0
           fi
-          echo "packages=$(echo "$PACKAGES" | tr '\n' ' ')" >> $GITHUB_OUTPUT
-          echo "Found packages: $PACKAGES"
 
-      - name: Update git packages
-        run: |
-          PACKAGES="${{ steps.find-packages.outputs.packages }}"
+          echo "Building and updating $PKG..."
 
-          for PKG in $PACKAGES; do
-            echo "Processing package: $PKG"
+          scripts/run_docker.sh $PKG
 
-            if [ ! -d "$PKG" ]; then
-              echo "Package directory $PKG not found, skipping..."
-              continue
-            fi
+          cd $PKG-aur
 
-            echo "Building and updating $PKG..."
+          # Check if PKGBUILD or .SRCINFO have changes
+          if git diff --quiet PKGBUILD .SRCINFO 2>/dev/null; then
+            echo "No changes detected in PKGBUILD or .SRCINFO"
+          else
+            echo "Changes detected in PKGBUILD or .SRCINFO:"
+            git diff --name-only PKGBUILD .SRCINFO 2>/dev/null || true
+            git config --local user.email "brianrobt@pm.me"
+            git config --local user.name "Brian Thompson"
 
-            scripts/run_docker.sh $PKG
+            # Add only PKGBUILD and .SRCINFO files
+            git add PKGBUILD .SRCINFO
 
-            cd $PKG-aur
+            # Get pkgver value
+            PKGVER=$(grep "^pkgver=" PKGBUILD | sed 's/pkgver=//' | cut -d' ' -f1)
 
-            # Check if PKGBUILD or .SRCINFO have changes
-            if git diff --quiet PKGBUILD .SRCINFO 2>/dev/null; then
-              echo "changes=false" >> $GITHUB_OUTPUT
-              echo "No changes detected in PKGBUILD or .SRCINFO"
-            else
-              echo "changes=true" >> $GITHUB_OUTPUT
-              echo "Changes detected in PKGBUILD or .SRCINFO:"
-              git diff --name-only PKGBUILD .SRCINFO 2>/dev/null || true
-              git config --local user.email "brianrobt@pm.me"
-              git config --local user.name "Brian Thompson"
+            # Get pkgrel value
+            PKGREL=$(grep "^pkgrel=" PKGBUILD | sed 's/pkgrel=//')
 
-              # Add only PKGBUILD and .SRCINFO files
-              git add PKGBUILD .SRCINFO
+            PKGVERREL="$PKGVER-$PKGREL"
 
-              # Get pkgver value
-              PKGVER=$(grep "^pkgver=" PKGBUILD | sed 's/pkgver=//' | cut -d' ' -f1)
+            echo "Running git commit with message: 'build: release $PKG v$PKGVERREL'"
+            git commit -m "build: release $PKG v$PKGVERREL"
+            git push origin master
 
-              # Get pkgrel value
-              PKGREL=$(grep "^pkgrel=" PKGBUILD | sed 's/pkgrel=//')
+            cp PKGBUILD ../$PKG/PKGBUILD
+            cp .SRCINFO ../$PKG/.SRCINFO
 
-              PKGVERREL="$PKGVER-$PKGREL"
+            cd ..
+            git add -A
+            git commit -m "build: release $PKG v$PKGVERREL"
+            git push origin master
+          fi
 
-              echo "Running git commit with message: 'build: release v$PKGVERREL'"
-              git commit -m "build: release $PKG v$PKGVERREL"
-              git push origin master
-
-              cp PKGBUILD ../$PKG/PKGBUILD
-              cp .SRCINFO ../$PKG/.SRCINFO
-
-              cd ..
-              git add -A
-              git commit -m "build: release $PKG v$PKGVERREL"
-              git push origin master
-            fi
-
-            echo "Updated $PKG (AUR package: $AUR_PKG_NAME)"
-          done
+          echo "Updated $PKG"
 
       - name: Create summary
         if: always()
         run: |
           echo "## Git Package Update Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Package Updated:** ${{ matrix.package }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
 
-          if [ "${{ steps.find-packages.outputs.changes }}" = "true" ]; then
-            echo "**Updates Applied**" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "The following packages were updated:" >> $GITHUB_STEP_SUMMARY
-            git diff --name-only | grep -E '^[^/]+/(PKGBUILD|\.SRCINFO)$' | cut -d'/' -f1 | sort -u | while read PKG; do
-              echo "- $PKG" >> $GITHUB_STEP_SUMMARY
-            done
-            echo "" >> $GITHUB_STEP_SUMMARY
-
-            if [ "${{ env.AUR_USERNAME }}" != "" ]; then
-              echo "**AUR Updates**" >> $GITHUB_STEP_SUMMARY
-              echo "Changes were also pushed to the AUR repositories." >> $GITHUB_STEP_SUMMARY
-            else
-              echo "**AUR Updates Skipped**" >> $GITHUB_STEP_SUMMARY
-              echo "AUR credentials not configured. Changes were only committed to this repository." >> $GITHUB_STEP_SUMMARY
-            fi
+          if [ "${{ env.AUR_USERNAME }}" != "" ]; then
+            echo "**AUR Updates**" >> $GITHUB_STEP_SUMMARY
+            echo "Changes were also pushed to the AUR repositories." >> $GITHUB_STEP_SUMMARY
           else
-            echo "**No Updates Needed**" >> $GITHUB_STEP_SUMMARY
-            echo "All git packages are up to date." >> $GITHUB_STEP_SUMMARY
+            echo "**AUR Updates Skipped**" >> $GITHUB_STEP_SUMMARY
+            echo "AUR credentials not configured. Changes were only committed to this repository." >> $GITHUB_STEP_SUMMARY
           fi
