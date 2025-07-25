@@ -66,110 +66,39 @@ jobs:
               continue
             fi
 
-            if [ ! -f "$PKG/Dockerfile" ]; then
-              echo "No Dockerfile found for $PKG, skipping..."
-              continue
-            fi
-
             echo "Building and updating $PKG..."
 
-            # Extract AUR package name from PKGBUILD for dynamic cloning
-            AUR_PKG_NAME=$(grep '^pkgname=' "$PKG/PKGBUILD" | cut -d'=' -f2 | tr -d "'\"")
+            scripts/run_docker.sh $PKG
 
-            # Build the Docker image
-            cd "$PKG"
-            docker build -t "$PKG-aur" .
+            cd $PKG-aur
 
-            # Run the container to update PKGBUILD and .SRCINFO
-            CONTAINER_ID=$(docker run -d "$PKG-aur" tail -f /dev/null)
-
-            # Wait a moment for container to be ready
-            sleep 5
-
-            # Run makepkg to update version and generate .SRCINFO
-            docker exec "$CONTAINER_ID" bash -c "
-              cd /home/builder
-              makepkg --printsrcinfo > .SRCINFO
-              echo 'Updated PKGBUILD and .SRCINFO files'
-            "
-
-            # Copy updated files from container
-            docker cp "$CONTAINER_ID:/home/builder/PKGBUILD" "./PKGBUILD"
-            docker cp "$CONTAINER_ID:/home/builder/.SRCINFO" "./.SRCINFO"
-
-            # Clean up container
-            docker stop "$CONTAINER_ID"
-            docker rm "$CONTAINER_ID"
-
-            cd ..
-
-            echo "Updated $PKG (AUR package: $AUR_PKG_NAME)"
-          done
-
-      - name: Check for changes
-        id: check-changes
-        run: |
-          if git diff --quiet; then
-            echo "changes=false" >> $GITHUB_OUTPUT
-            echo "No changes detected"
-          else
-            echo "changes=true" >> $GITHUB_OUTPUT
-            echo "Changes detected:"
-            git diff --name-only
-          fi
-
-      - name: Commit and push changes
-        if: steps.check-changes.outputs.changes == 'true'
-        run: |
-          git config --local user.email "brianrobt@pm.me"
-          git config --local user.name "Brian Thompson"
-
-          # Add all changed files
-          git add -A
-
-          # Create commit message
-          CHANGED_PACKAGES=$(git diff --name-only | grep -E '^[^/]+/(PKGBUILD|\.SRCINFO)$' | cut -d'/' -f1 | sort -u | tr '\n' ' ')
-          COMMIT_MSG="chore: update git packages - $CHANGED_PACKAGES"
-
-          git commit -m "$COMMIT_MSG"
-          git push
-
-      - name: Push to AUR
-        if: steps.check-changes.outputs.changes == 'true' && env.AUR_USERNAME != ''
-        run: |
-          PACKAGES="${{ steps.find-packages.outputs.packages }}"
-
-          for PKG in $PACKAGES; do
-            if [ -d "$PKG" ] && [ -f "$PKG/PKGBUILD" ]; then
-              echo "Pushing $PKG to AUR..."
-
-              # Extract AUR package name from PKGBUILD
-              AUR_PKG_NAME=$(grep '^pkgname=' "$PKG/PKGBUILD" | cut -d'=' -f2 | tr -d "'\"")
-
-              # Create temporary directory for AUR push
-              TEMP_DIR=$(mktemp -d)
-              cd "$TEMP_DIR"
-
+            if git diff --quiet; then
+              echo "changes=false" >> $GITHUB_OUTPUT
+              echo "No changes detected"
+            else
+              echo "changes=true" >> $GITHUB_OUTPUT
+              echo "Changes detected:"
+              git diff --name-only
               git config --local user.email "brianrobt@pm.me"
               git config --local user.name "Brian Thompson"
 
-              # Clone AUR repository
-              git clone "ssh://aur@aur.archlinux.org/$AUR_PKG_NAME.git" .
+              # Add all changed files
+              git add -A
 
-              # Copy updated files
-              cp "../../$PKG/PKGBUILD" .
-              cp "../../$PKG/.SRCINFO" .
+              # Get pkgver value
+              PKGVER=$(grep "^pkgver=" $PKG/PKGBUILD | sed 's/pkgver=//')
 
-              # Commit and push to AUR
-              git add PKGBUILD .SRCINFO
-              git commit -m "chore: update to latest git version"
-              git push origin master
+              # Get pkgrel value
+              PKGREL=$(grep "^pkgrel=" $PKG/PKGBUILD | sed 's/pkgrel=//')
 
-              cd ../..
-              rm -rf "$TEMP_DIR"
+              PKGVERREL="$PKGVER-$PKGREL"
 
-              echo "Successfully pushed $AUR_PKG_NAME to AUR"
+              echo "Running git commit with message: 'build: release v$PKGVERREL'"
+              # git commit -m "build: release v$PKGVERREL"
+              # git push origin master
             fi
+
+            echo "Updated $PKG (AUR package: $AUR_PKG_NAME)"
           done
 
       - name: Create summary
