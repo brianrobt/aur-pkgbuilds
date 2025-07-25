@@ -72,21 +72,22 @@ jobs:
 
             cd $PKG-aur
 
-            if git diff --quiet; then
+            # Check if PKGBUILD or .SRCINFO have changes
+            if git diff --quiet PKGBUILD .SRCINFO 2>/dev/null; then
               echo "changes=false" >> $GITHUB_OUTPUT
-              echo "No changes detected"
+              echo "No changes detected in PKGBUILD or .SRCINFO"
             else
               echo "changes=true" >> $GITHUB_OUTPUT
-              echo "Changes detected:"
-              git diff --name-only
+              echo "Changes detected in PKGBUILD or .SRCINFO:"
+              git diff --name-only PKGBUILD .SRCINFO 2>/dev/null || true
               git config --local user.email "brianrobt@pm.me"
               git config --local user.name "Brian Thompson"
 
-              # Add all changed files
-              git add -A
+              # Add only PKGBUILD and .SRCINFO files
+              git add PKGBUILD .SRCINFO
 
               # Get pkgver value
-              PKGVER=$(grep "^pkgver=" PKGBUILD | sed 's/pkgver=//')
+              PKGVER=$(grep "^pkgver=" PKGBUILD | sed 's/pkgver=//' | cut -d' ' -f1)
 
               # Get pkgrel value
               PKGREL=$(grep "^pkgrel=" PKGBUILD | sed 's/pkgrel=//')
@@ -94,8 +95,8 @@ jobs:
               PKGVERREL="$PKGVER-$PKGREL"
 
               echo "Running git commit with message: 'build: release v$PKGVERREL'"
-              # git commit -m "build: release v$PKGVERREL"
-              # git push origin master
+              git commit -m "build: release v$PKGVERREL"
+              git push origin master
             fi
 
             echo "Updated $PKG (AUR package: $AUR_PKG_NAME)"
@@ -107,7 +108,7 @@ jobs:
           echo "## Git Package Update Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          if [ "${{ steps.check-changes.outputs.changes }}" = "true" ]; then
+          if [ "${{ steps.find-packages.outputs.changes }}" = "true" ]; then
             echo "**Updates Applied**" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "The following packages were updated:" >> $GITHUB_STEP_SUMMARY
