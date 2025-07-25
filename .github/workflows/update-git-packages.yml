@@ -77,6 +77,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update git package
+        id: update-git-package
         run: |
           PKG="${{ matrix.package }}"
 
@@ -124,6 +125,8 @@ jobs:
             git add -A
             git commit -m "build: release $PKG v$PKGVERREL"
             git push origin master
+
+            echo "pushed=true" >> $GITHUB_OUTPUT
           fi
 
           echo "Updated $PKG"
@@ -133,13 +136,14 @@ jobs:
         run: |
           echo "## Git Package Update Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Package Updated:** ${{ matrix.package }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Package:** ${{ matrix.package }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          if [ "${{ env.AUR_USERNAME }}" != "" ]; then
-            echo "**AUR Updates**" >> $GITHUB_STEP_SUMMARY
-            echo "Changes were also pushed to the AUR repositories." >> $GITHUB_STEP_SUMMARY
+          # Check if changes were actually pushed
+          if [ "${{ steps.update-git-package.outputs.pushed }}" == "true" ]; then
+            echo "**Status:** ✅ Updated" >> $GITHUB_STEP_SUMMARY
+            echo "Changes were detected and pushed to both this repository and AUR." >> $GITHUB_STEP_SUMMARY
           else
-            echo "**AUR Updates Skipped**" >> $GITHUB_STEP_SUMMARY
-            echo "AUR credentials not configured. Changes were only committed to this repository." >> $GITHUB_STEP_SUMMARY
+            echo "**Status:** ⏭️ No changes" >> $GITHUB_STEP_SUMMARY
+            echo "No changes detected in PKGBUILD or .SRCINFO files." >> $GITHUB_STEP_SUMMARY
           fi
