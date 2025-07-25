@@ -1,5 +1,6 @@
 #!/bin/bash
-PKGNAME="$1"
+PKGNAME_DIR="$1"
+PKGNAME=$(grep "^pkgname=" "$PKGNAME_DIR/PKGBUILD" | sed 's/pkgname=//' | tr -d '"' | tr -d "'")
 CONTAINER_NAME="${PKGNAME}-builder"
 IMAGE_NAME="${PKGNAME}-aur"
 AUR_URL="ssh://aur@aur.archlinux.org/${PKGNAME}.git"
