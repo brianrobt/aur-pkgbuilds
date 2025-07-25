@@ -5,6 +5,8 @@ CONTAINER_NAME="${PKGNAME_DIR}-builder"
 IMAGE_NAME="${PKGNAME_DIR}-aur"
 AUR_URL="ssh://aur@aur.archlinux.org/${PKGNAME}.git"
 
+echo "Git URL: $AUR_URL"
+
 # Clone the AUR repository
 if [ ! -d $PKGNAME_DIR-aur ]; then
   git clone $AUR_URL $PKGNAME_DIR-aur
