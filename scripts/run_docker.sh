@@ -1,13 +1,35 @@
 #!/bin/bash
-PKGNAME="openmohaa"
+PKGNAME="$1"
 CONTAINER_NAME="${PKGNAME}-builder"
 IMAGE_NAME="${PKGNAME}-aur"
+AUR_URL="ssh://aur@aur.archlinux.org/${PKGNAME}.git"
 
-# Start container with specific name
-docker run -d --name $CONTAINER_NAME $IMAGE_NAME
+# Clone the AUR repository
+if [ ! -d $PKGNAME-aur ]; then
+  git clone $AUR_URL $PKGNAME-aur
+fi
 
-# Copy files using the known name
-docker cp $CONTAINER_NAME:/workspace/. .
+# Copy the PKGBUILD and .SRCINFO files to the AUR repository
+cp -r $PKGNAME/* $PKGNAME-aur/
 
-# Clean up
-docker rm $CONTAINER_NAME
+# Checkout the latest version
+cd $PKGNAME-aur
+git stash
+git checkout master
+git pull origin master
+git stash pop
+
+# Build the package
+if [ -f Dockerfile ]; then
+  docker build -t $IMAGE_NAME .
+
+  # Start container with specific name
+  docker run -d --name $CONTAINER_NAME $IMAGE_NAME
+
+  # Copy files from the builder's home directory
+  docker cp $CONTAINER_NAME:/home/builder/.SRCINFO .
+  docker cp $CONTAINER_NAME:/home/builder/PKGBUILD .
+
+  # Clean up
+  docker rm $CONTAINER_NAME
+fi
