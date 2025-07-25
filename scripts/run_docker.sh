@@ -24,13 +24,16 @@ cp -r ../$PKGNAME_DIR/* .
 if [ -f Dockerfile ]; then
   docker build -t $IMAGE_NAME .
 
-  # Start container with specific name
-  docker run -d --name $CONTAINER_NAME $IMAGE_NAME
+  # Only proceed if the build was successful
+  if [ $? -eq 0 ]; then
+    # Copy files from the builder's home directory
+    docker cp $CONTAINER_NAME:/home/builder/.SRCINFO .
+    docker cp $CONTAINER_NAME:/home/builder/PKGBUILD .
 
-  # Copy files from the builder's home directory
-  docker cp $CONTAINER_NAME:/home/builder/.SRCINFO .
-  docker cp $CONTAINER_NAME:/home/builder/PKGBUILD .
-
-  # Clean up
-  docker rm $CONTAINER_NAME
+    # Clean up
+    docker rm $CONTAINER_NAME
+  else
+    echo "Docker build failed for $PKGNAME_DIR"
+    exit 1
+  fi
 fi
