@@ -21,5 +21,5 @@ RUN yay -S --noconfirm \
 
 # Build the package
 RUN updpkgsums
-# RUN makepkg -sif --noconfirm
+RUN makepkg -sif --noconfirm
 RUN makepkg --printsrcinfo > .SRCINFO

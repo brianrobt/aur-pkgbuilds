@@ -9,15 +9,13 @@ if [ ! -d $PKGNAME-aur ]; then
   git clone $AUR_URL $PKGNAME-aur
 fi
 
-# Copy the PKGBUILD and .SRCINFO files to the AUR repository
-cp -r $PKGNAME/* $PKGNAME-aur/
-
 # Checkout the latest version
 cd $PKGNAME-aur
-git stash
 git checkout master
 git pull origin master
-git stash pop
+
+# Copy the PKGBUILD and .SRCINFO files to the AUR repository
+cp -r ../$PKGNAME/* .
 
 # Build the package
 if [ -f Dockerfile ]; then
