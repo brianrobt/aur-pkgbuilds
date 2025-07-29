@@ -94,7 +94,7 @@ if [ -f Dockerfile ]; then
       else
           echo "Could not fetch latest version"
       fi
-  elif [[ echo $PKGNAME_DIR | rev | cut -d- -f2 | rev == "git" ]]; then
+  elif [[ $(echo $PKGNAME_DIR | rev | cut -d- -f2 | rev) == "git" ]]; then
     # Build the package
     if [ -f Dockerfile ]; then
       docker build -t $IMAGE_NAME .
