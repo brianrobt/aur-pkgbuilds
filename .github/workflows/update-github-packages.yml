@@ -36,7 +36,7 @@ jobs:
             # Find all directories that don't end with -git and have github.com in their PKGBUILD url
             PACKAGES=$(find . -maxdepth 1 -type d -name "*" ! -name ".*" ! -name "*-git" ! -name "*-aur" ! -name "scripts" ! -name "aurvt" | while read dir; do
               if [ -f "$dir/PKGBUILD" ]; then
-                if grep -q "github\.com" "$dir/PKGBUILD" 2>/dev/null; then
+                if grep -q "^url=.*github\.com" "$dir/PKGBUILD" 2>/dev/null; then
                   basename "$dir"
                 fi
               fi
