@@ -75,16 +75,15 @@ if [ -f Dockerfile ]; then
           # Update checksums using updpkgsums in Docker container
           echo "Updating checksums..."
           # Build temporary image for updpkgsums
-          docker build -t "${IMAGE_NAME}-updpkgsums" .
+          docker build -t "${IMAGE_NAME}" .
 
           if [ $? -eq 0 ]; then
-              # Run updpkgsums in container
-              docker run --rm -v "$(pwd):/build" "${IMAGE_NAME}-updpkgsums" sh -c "cd /build && updpkgsums && makepkg --printsrcinfo > .SRCINFO"
-
-              # Clean up temp image
-              docker rmi "${IMAGE_NAME}-updpkgsums" >/dev/null 2>&1
-
-              echo "Version updated to $LATEST_VERSION and checksums updated"
+            docker run -d --name $CONTAINER_NAME $IMAGE_NAME
+            # Copy files from the builder's home directory
+            docker cp $CONTAINER_NAME:/home/builder/.SRCINFO .
+            docker cp $CONTAINER_NAME:/home/builder/PKGBUILD .
+            # Clean up
+            docker rm $CONTAINER_NAME
           else
               echo "Failed to build Docker image for updpkgsums"
               exit 1
