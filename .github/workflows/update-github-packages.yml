@@ -82,6 +82,14 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Install Go
+        uses: actions/setup-go@v5
+
+      - name: Install aurvt
+        uses: mattdowdell/go-installer@v0.3.0
+        with:
+          package: github.com/brianrobt/aurvt
+
       - name: Check for new version
         id: check-version
         run: |
