@@ -2,7 +2,7 @@
 
 _pkg=abydos
 pkgname=python-${_pkg,,}
-pkgver=0.5.0 # renovate: datasource=pypi depName=abydos
+pkgver=0.5.0
 pkgrel=7
 pkgdesc="NLP/IR library for Python"
 arch=(any)

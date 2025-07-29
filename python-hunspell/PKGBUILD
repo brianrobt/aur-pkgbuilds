@@ -3,7 +3,7 @@
 
 pkgname=python-hunspell
 _name=pyhunspell
-pkgver=0.5.5 # renovate: datasource=github-tags depName=pyhunspell/pyhunspell
+pkgver=0.5.5
 pkgrel=1
 pkgdesc='Python bindings for the Hunspell spellchecker engine'
 arch=('x86_64')

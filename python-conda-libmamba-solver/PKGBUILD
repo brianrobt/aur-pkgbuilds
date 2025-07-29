@@ -3,7 +3,7 @@
 
 _name=conda-libmamba-solver
 pkgname=python-$_name
-pkgver=25.4.0 # renovate: datasource=github-tags depName=conda/conda-libmamba-solver
+pkgver=25.4.0
 pkgrel=1
 pkgdesc='The libmamba based solver for conda.'
 arch=(any)

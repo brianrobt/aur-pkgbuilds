@@ -3,7 +3,7 @@
 
 pkgname=python-jproperties
 _name=jproperties
-pkgver=2.1.2 # renovate: datasource=pypi depName=jproperties
+pkgver=2.1.2
 pkgrel=1
 pkgdesc='Java Property file parser and writer for Python'
 url='https://github.com/Tblue/python-jproperties'
