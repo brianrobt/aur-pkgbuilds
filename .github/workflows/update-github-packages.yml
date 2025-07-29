@@ -86,9 +86,16 @@ jobs:
         uses: actions/setup-go@v5
 
       - name: Install aurvt
-        uses: mattdowdell/go-installer@v0.3.0
-        with:
-          package: github.com/brianrobt/aurvt
+        run: |
+          # Install aurvt using go install
+          go install github.com/brianrobt/aurvt@latest
+
+          # Verify installation
+          which aurvt || echo "aurvt not found in PATH"
+          ls -la $(go env GOPATH)/bin/aurvt || echo "aurvt not found in GOPATH/bin"
+
+          # Add GOPATH/bin to PATH if not already there
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
       - name: Check for new version
         id: check-version
