@@ -111,3 +111,84 @@ Edit the `cron` expression in the workflow file:
 schedule:
   - cron: '0 2 * * *'  # Daily at 2 AM UTC
 ```
+
+## Update GitHub Packages Workflow
+
+The `update-github-packages.yml` workflow automatically checks for new versions of GitHub-hosted packages and builds them when updates are available:
+
+1. **Version Checking**: Uses `aurvt` to check for new versions on GitHub
+2. **Selective Building**: Only builds packages when new versions are detected
+3. **Docker Build**: Builds packages using existing Dockerfiles
+4. **AUR Updates**: Pushes updates to both this repository and AUR
+
+### Triggers
+
+- **Scheduled**: Runs daily at 3 AM UTC (1 hour after git packages)
+- **Manual**: Can be triggered manually with optional package selection
+
+### How It Works
+
+1. **Package Discovery**: Finds all directories that:
+   - Don't end with `-git`
+   - Have `github.com` in their PKGBUILD url field
+2. **Version Check**: Runs `aurvt <package>` to check for new versions
+3. **Conditional Build**: Only proceeds if a new version is available
+4. **Docker Build**: Uses `scripts/run_docker.sh` to build packages
+5. **Repository Update**: Commits changes to this repository
+6. **AUR Push**: Pushes updates to AUR repositories (if configured)
+
+### Supported Packages
+
+The workflow automatically detects and processes packages like:
+
+- `alist` (GitHub: AlistGo/alist)
+- `micromamba` (GitHub: mamba-org/micromamba)
+- `proton-pass-bin` (GitHub: ProtonPass/pass-extension)
+- And any other packages with GitHub URLs in their PKGBUILD
+
+### Manual Execution
+
+You can manually trigger the workflow:
+
+1. Go to the "Actions" tab in your GitHub repository
+2. Select "Update GitHub Packages"
+3. Click "Run workflow"
+4. Optionally specify a single package name
+5. Click "Run workflow"
+
+### Troubleshooting
+
+#### aurvt Command Fails
+
+- Verify the package has a valid GitHub URL in its PKGBUILD
+- Check that the GitHub repository has releases
+- Ensure the package directory structure is correct
+
+#### No Updates Detected
+
+- This is normal if packages are already at the latest version
+- Check that the GitHub repository has recent releases
+- Verify the PKGBUILD url field points to the correct GitHub repository
+
+#### Build Fails After Version Update
+
+- Check that the new version is compatible with the build process
+- Verify all dependencies are available
+- Check container logs for specific errors
+
+### Customization
+
+To add new GitHub packages:
+
+1. Create a package directory with a valid PKGBUILD
+2. Ensure the `url` field in PKGBUILD contains `github.com`
+3. Add a Dockerfile if needed for building
+4. The workflow will automatically detect and process it
+
+To modify the schedule:
+
+Edit the `cron` expression in the workflow file:
+```yaml
+schedule:
+  - cron: '0 3 * * *'  # Daily at 3 AM UTC
+```

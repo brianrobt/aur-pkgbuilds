@@ -130,7 +130,7 @@ See the Makefile or run `make help` for more details.
 
 ## GitHub Actions
 
-This repository includes automated workflows for maintaining git packages:
+This repository includes automated workflows for maintaining packages:
 
 ### Automated Git Package Updates
 
@@ -140,14 +140,24 @@ The `update-git-packages.yml` workflow automatically:
 - Commits changes to this repository
 - Pushes updates to AUR (if configured)
 
+### Automated GitHub Package Updates
+
+The `update-github-packages.yml` workflow automatically:
+- Checks for new versions of GitHub-hosted packages using `aurvt`
+- Only builds packages when new versions are detected
+- Updates PKGBUILD and .SRCINFO files with latest versions
+- Commits changes to this repository
+- Pushes updates to AUR (if configured)
+
 **Setup:**
 1. Run `./scripts/setup-aur-ssh.sh` to generate SSH keys
 2. Add the public key to your AUR account
 3. Add `AUR_USERNAME` and `AUR_SSH_PRIVATE_KEY` secrets to GitHub
-4. The workflow runs daily at 2 AM UTC
+4. Git packages workflow runs daily at 2 AM UTC
+5. GitHub packages workflow runs daily at 3 AM UTC
 
 **Manual Execution:**
-- Go to Actions tab → "Update Git Packages" → "Run workflow"
+- Go to Actions tab → "Update Git Packages" or "Update GitHub Packages" → "Run workflow"
 - Optionally specify a single package name
 
 For detailed setup instructions, see [`.github/workflows/README.md`](.github/workflows/README.md).
