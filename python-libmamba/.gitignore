@@ -1,5 +1,0 @@
-*.tar.gz
-*.zst
-.pkgver
-pkg/
-src/
