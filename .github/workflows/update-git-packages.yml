@@ -91,6 +91,37 @@ jobs:
 
           echo "Building and updating $PKG..."
 
+          # Clone the AUR repository first
+          git clone ssh://aur@aur.archlinux.org/$PKG.git $PKG-aur
+          cd $PKG-aur
+
+          # Save the current pkgver before any updates
+          ORIGINAL_PKGVER=$(grep "^pkgver=" PKGBUILD | sed 's/pkgver=//' | cut -d' ' -f1)
+          echo "Original pkgver: $ORIGINAL_PKGVER"
+
+          # Install makepkg in Arch Linux container and run makepkg --nobuild
+          docker run --rm -v $(pwd):/workspace -w /workspace archlinux:latest bash -c "
+            pacman -Sy --noconfirm pacman-contrib
+            cd /workspace
+            makepkg --nobuild
+          "
+
+          # Get the updated pkgver after makepkg --nobuild
+          UPDATED_PKGVER=$(grep "^pkgver=" PKGBUILD | sed 's/pkgver=//' | cut -d' ' -f1)
+          echo "Updated pkgver: $UPDATED_PKGVER"
+
+          # Compare versions
+          if [ "$ORIGINAL_PKGVER" != "$UPDATED_PKGVER" ]; then
+            echo "Version changed from $ORIGINAL_PKGVER to $UPDATED_PKGVER"
+            echo "version_changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "Version unchanged: $ORIGINAL_PKGVER"
+            echo "version_changed=false" >> $GITHUB_OUTPUT
+          fi
+
+          cd ..
+
+          # Now run the original script
           scripts/run_docker.sh --user "Brian Thompson" --email "brianrobt@pm.me" $PKG
 
           cd $PKG-aur
@@ -137,6 +168,14 @@ jobs:
           echo "## Git Package Update Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Package:** ${{ matrix.package }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Check if version changed during makepkg --nobuild
+          if [ "${{ steps.update-git-package.outputs.version_changed }}" == "true" ]; then
+            echo "**Version Check:** 🔄 Version updated by makepkg --nobuild" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**Version Check:** ⏭️ No version change detected" >> $GITHUB_STEP_SUMMARY
+          fi
           echo "" >> $GITHUB_STEP_SUMMARY
 
           # Check if changes were actually pushed
