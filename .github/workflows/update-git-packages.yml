@@ -34,8 +34,14 @@ jobs:
             # Use specific package if provided
             PACKAGES='["${{ github.event.inputs.package }}"]'
           else
-            # Find all directories ending with -git
-            PACKAGES=$(find . -maxdepth 1 -type d -name "*-git" -exec basename {} \; | jq -R -s -c 'split("\n")[:-1]')
+            # Find all directories that end with -git
+            PACKAGES=$(find . -maxdepth 1 -type d -name "*-git" | while read dir; do
+              if [ -f "$dir/PKGBUILD" ]; then
+                if grep -q "^url=.*github\.com" "$dir/PKGBUILD" 2>/dev/null; then
+                  basename "$dir"
+                fi
+              fi
+            done | jq -R -s -c 'split("\n")[:-1]')
           fi
           echo "packages=$PACKAGES" >> $GITHUB_OUTPUT
           echo "Found packages: $PACKAGES"
