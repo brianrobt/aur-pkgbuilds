@@ -14,6 +14,7 @@ on:
 env:
   AUR_USERNAME: ${{ secrets.AUR_USERNAME }}
   AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
 jobs:
   find-packages:

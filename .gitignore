@@ -2,6 +2,8 @@ build/
 *.backup
 */temp_clone
 *-aur/
+*.code-workspace
+.DS_Store
 
 # Dockerfiles for packages I don't maintain
 proton-pass-bin/Dockerfile
