@@ -125,6 +125,8 @@ jobs:
             git config user.name "Brian Thompson"
             git add -A
             git commit -m "build: release $PKG v$PKGVERREL"
+            # Configure git to use the GH_TOKEN for authentication
+            git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git
             git push origin master
 
             echo "pushed=true" >> $GITHUB_OUTPUT
