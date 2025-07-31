@@ -21,6 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       packages: ${{ steps.get-packages.outputs.packages }}
+      package_dirs: ${{ steps.get-packages.outputs.package_dirs }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
@@ -33,6 +34,7 @@ jobs:
           if [ "${{ github.event.inputs.package }}" != "" ]; then
             # Use specific package if provided
             PACKAGES='["${{ github.event.inputs.package }}"]'
+            PACKAGE_DIRS='["${{ github.event.inputs.package }}"]'
           else
             # Find all directories that end with -git and extract pkgname from PKGBUILD
             PACKAGES=$(find . -maxdepth 1 -type d -name "*-git" | while read dir; do
@@ -44,9 +46,18 @@ jobs:
                 fi
               fi
             done | jq -R -s -c 'split("\n")[:-1]')
+
+            # Get package directories
+            PACKAGE_DIRS=$(find . -maxdepth 1 -type d -name "*-git" | while read dir; do
+              if [ -f "$dir/PKGBUILD" ]; then
+                if grep -q "^url=.*github\.com" "$dir/PKGBUILD" 2>/dev/null; then
+                  basename "$dir"
+                fi
+              fi
+            done | jq -R -s -c 'split("\n")[:-1]')
           fi
           echo "packages=$PACKAGES" >> $GITHUB_OUTPUT
-          echo "Found packages: $PACKAGES"
+          echo "package_dirs=$PACKAGE_DIRS" >> $GITHUB_OUTPUT
 
   update-git-packages:
     needs: find-packages
@@ -91,17 +102,18 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           PKG="${{ matrix.package }}"
+          PKG_DIR="${{ fromJson(needs.find-packages.outputs.package_dirs) }}"
 
-          if [ ! -d "$PKG" ]; then
-            echo "Package directory $PKG not found, skipping..."
+          if [ ! -d "$PKG_DIR" ]; then
+            echo "Package directory $PKG_DIR not found, skipping..."
             exit 0
           fi
 
-          echo "Building and updating $PKG..."
+          echo "Building and updating $PKG_DIR..."
 
           # Clone the AUR repository first
-          git clone ssh://aur@aur.archlinux.org/$PKG.git $PKG-aur
-          cd $PKG-aur
+          git clone ssh://aur@aur.archlinux.org/$PKG.git $PKG_DIR-aur
+          cd $PKG_DIR-aur
 
           # Save the current pkgver before any updates
           ORIGINAL_PKGVER=$(grep "^pkgver=" PKGBUILD | sed 's/pkgver=//' | cut -d' ' -f1)
