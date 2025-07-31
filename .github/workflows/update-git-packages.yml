@@ -106,12 +106,17 @@ jobs:
           echo "Original pkgver: $ORIGINAL_PKGVER"
 
           # Install makepkg in Arch Linux container and run makepkg --nobuild
-          docker run --rm -v $(pwd):/workspace -w /workspace brianrobt/archlinux-aur-dev:latest bash -c "
+          CONTAINER_ID=$(docker run -d -v $(pwd):/home/builder brianrobt/archlinux-aur-dev:latest bash -c "
             pacman -Sy --noconfirm pacman-contrib
-            cd /workspace
-            chown -R root:root /workspace
             makepkg --nobuild
-          "
+            sleep 10
+          ")
+
+          # Copy the updated PKGBUILD from the container
+          docker cp $CONTAINER_ID:/home/builder/PKGBUILD ./PKGBUILD
+
+          # Clean up the container
+          docker rm $CONTAINER_ID
 
           # Get the updated pkgver after makepkg --nobuild
           UPDATED_PKGVER=$(grep "^pkgver=" PKGBUILD | sed 's/pkgver=//' | cut -d' ' -f1)
