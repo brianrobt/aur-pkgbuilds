@@ -109,8 +109,10 @@ jobs:
           CONTAINER_ID=$(docker run -d -v $(pwd):/home/builder brianrobt/archlinux-aur-dev:latest bash -c "
             pacman -Sy --noconfirm pacman-contrib
             makepkg --nobuild
-            sleep 10
           ")
+
+          # Wait for the container to finish
+          docker wait $CONTAINER_ID
 
           # Copy the updated PKGBUILD from the container
           docker cp $CONTAINER_ID:/home/builder/PKGBUILD ./PKGBUILD
