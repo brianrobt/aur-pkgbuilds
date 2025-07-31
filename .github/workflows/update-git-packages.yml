@@ -34,11 +34,13 @@ jobs:
             # Use specific package if provided
             PACKAGES='["${{ github.event.inputs.package }}"]'
           else
-            # Find all directories that end with -git
+            # Find all directories that end with -git and extract pkgname from PKGBUILD
             PACKAGES=$(find . -maxdepth 1 -type d -name "*-git" | while read dir; do
               if [ -f "$dir/PKGBUILD" ]; then
                 if grep -q "^url=.*github\.com" "$dir/PKGBUILD" 2>/dev/null; then
-                  basename "$dir"
+                  # Extract pkgname from PKGBUILD
+                  PKGNAME=$(grep "^pkgname=" "$dir/PKGBUILD" | sed 's/pkgname=//' | tr -d '"' | tr -d "'")
+                  echo "$PKGNAME"
                 fi
               fi
             done | jq -R -s -c 'split("\n")[:-1]')
@@ -131,6 +133,7 @@ jobs:
           else
             echo "Version unchanged: $ORIGINAL_PKGVER"
             echo "version_changed=false" >> $GITHUB_OUTPUT
+            exit 0
           fi
 
           cd ..
