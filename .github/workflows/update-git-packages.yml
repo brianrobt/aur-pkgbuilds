@@ -100,7 +100,7 @@ jobs:
           echo "Original pkgver: $ORIGINAL_PKGVER"
 
           # Install makepkg in Arch Linux container and run makepkg --nobuild
-          docker run --rm -v $(pwd):/workspace -w /workspace archlinux:latest bash -c "
+          docker run --rm -v $(pwd):/workspace -w /workspace brianrobt/archlinux-aur-dev:latest bash -c "
             pacman -Sy --noconfirm pacman-contrib
             cd /workspace
             makepkg --nobuild
