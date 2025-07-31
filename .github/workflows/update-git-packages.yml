@@ -109,6 +109,7 @@ jobs:
           docker run --rm -v $(pwd):/workspace -w /workspace brianrobt/archlinux-aur-dev:latest bash -c "
             pacman -Sy --noconfirm pacman-contrib
             cd /workspace
+            chown -R root:root /workspace
             makepkg --nobuild
           "
 
