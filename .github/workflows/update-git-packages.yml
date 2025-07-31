@@ -79,6 +79,8 @@ jobs:
 
       - name: Update git package
         id: update-git-package
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           PKG="${{ matrix.package }}"
 
@@ -89,7 +91,7 @@ jobs:
 
           echo "Building and updating $PKG..."
 
-          scripts/run_docker.sh $PKG
+          scripts/run_docker.sh --user "Brian Thompson" --email "brianrobt@pm.me" $PKG
 
           cd $PKG-aur
 
@@ -99,8 +101,6 @@ jobs:
           else
             echo "Changes detected in PKGBUILD or .SRCINFO:"
             git diff --name-only PKGBUILD .SRCINFO 2>/dev/null || true
-            git config user.email "brianrobt@pm.me"
-            git config user.name "Brian Thompson"
 
             # Add only PKGBUILD and .SRCINFO files
             git add PKGBUILD .SRCINFO
@@ -121,12 +121,9 @@ jobs:
             cp .SRCINFO ../$PKG/.SRCINFO
 
             cd ..
-            git config user.email "brianrobt@pm.me"
-            git config user.name "Brian Thompson"
+
             git add -A
             git commit -m "build: release $PKG v$PKGVERREL"
-            # Configure git to use the GH_TOKEN for authentication
-            git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git
             git push origin master
 
             echo "pushed=true" >> $GITHUB_OUTPUT

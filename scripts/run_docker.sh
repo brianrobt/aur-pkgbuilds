@@ -1,5 +1,55 @@
 #!/bin/bash
 
+# Function to display usage information
+show_usage() {
+    echo "Usage: $0 [OPTIONS] <package_directory>"
+    echo ""
+    echo "Options:"
+    echo "  --user <name>     Set Git user.name"
+    echo "  --email <email>   Set Git user.email"
+    echo "  -h, --help        Show this help message"
+    echo ""
+    echo "Example:"
+    echo "  $0 --user 'Thompson, Brian' --email 'brianrobt@pm.me' my-package"
+}
+
+# Parse command line arguments
+GIT_USER_ARG=""
+GIT_EMAIL_ARG=""
+PKGNAME_DIR=""
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --user)
+            GIT_USER_ARG="$2"
+            shift 2
+            ;;
+        --email)
+            GIT_EMAIL_ARG="$2"
+            shift 2
+            ;;
+        -h|--help)
+            show_usage
+            exit 0
+            ;;
+        -*)
+            echo "Unknown option: $1"
+            show_usage
+            exit 1
+            ;;
+        *)
+            if [ -z "$PKGNAME_DIR" ]; then
+                PKGNAME_DIR="$1"
+            else
+                echo "Multiple package directories specified. Only one allowed."
+                show_usage
+                exit 1
+            fi
+            shift
+            ;;
+    esac
+done
+
 # Function to get the latest GitHub release version
 get_latest_github_version() {
     local repo_url="$1"
@@ -23,12 +73,12 @@ get_latest_github_commit() {
 
     # First try master branch
     local latest_commit=$(curl -s "https://api.github.com/repos/${full_repo}/commits/master" | grep '"sha"' | head -1 | sed 's/.*"sha": *"\([^"]*\)".*/\1/')
-    
+
     # If master doesn't exist, try main branch
     if [ -z "$latest_commit" ] || [[ "$latest_commit" == *"Not Found"* ]]; then
         latest_commit=$(curl -s "https://api.github.com/repos/${full_repo}/commits/main" | grep '"sha"' | head -1 | sed 's/.*"sha": *"\([^"]*\)".*/\1/')
     fi
-    
+
     echo "$latest_commit"
 }
 
@@ -59,11 +109,22 @@ update_pkgbuild_version() {
     echo "Updated PKGBUILD: pkgver=$new_version, pkgrel=1"
 }
 
-PKGNAME_DIR="$1"
-
+# Validate required arguments
 if [ -z "$PKGNAME_DIR" ]; then
-    echo "Usage: $0 <package_directory>"
+    echo "Error: Package directory is required"
+    show_usage
     exit 1
+fi
+
+# Configure Git user and email if provided
+if [ -n "$GIT_USER_ARG" ]; then
+    echo "Setting Git user.name to: $GIT_USER_ARG"
+    git config --global user.name "$GIT_USER_ARG"
+fi
+
+if [ -n "$GIT_EMAIL_ARG" ]; then
+    echo "Setting Git user.email to: $GIT_EMAIL_ARG"
+    git config --global user.email "$GIT_EMAIL_ARG"
 fi
 
 PKGNAME=$(grep "^pkgname=" "$PKGNAME_DIR/PKGBUILD" | sed 's/pkgname=//' | tr -d '"' | tr -d "'")
@@ -78,8 +139,38 @@ if [ ! -d $PKGNAME_DIR-aur ]; then
   git clone $AUR_URL $PKGNAME_DIR-aur
 fi
 
-# Checkout the latest version
+# Check Git user permissions
 cd $PKGNAME_DIR-aur
+echo "Checking Git user permissions..."
+
+# Get current Git user and email
+GIT_USER=$(git config user.name 2>/dev/null || echo "")
+GIT_EMAIL=$(git config user.email 2>/dev/null || echo "")
+
+if [ -z "$GIT_USER" ] || [ -z "$GIT_EMAIL" ]; then
+    echo "Warning: Git user.name or user.email not configured"
+    echo "Current Git user.name: $GIT_USER"
+    echo "Current Git user.email: $GIT_EMAIL"
+    echo "Please configure Git user credentials before proceeding"
+    exit 1
+fi
+
+echo "Git user configured: $GIT_USER <$GIT_EMAIL>"
+
+# Test write access by attempting to fetch and check if we can push
+echo "Testing write access to AUR repository..."
+if git ls-remote --exit-code origin >/dev/null 2>&1; then
+    echo "✓ Repository access confirmed"
+
+    # Check if we have write access by testing push capability
+    # This is a conservative check - we'll know for sure when we actually try to push
+    echo "Note: Write access will be verified when attempting to push changes"
+else
+    echo "✗ Cannot access repository. Check SSH key configuration and AUR access permissions"
+    exit 1
+fi
+
+# Checkout the latest version
 git checkout master
 git pull origin master
 
@@ -99,15 +190,15 @@ if [ -f Dockerfile ]; then
     echo "Git package detected: $PKGNAME_DIR"
     echo "Current version: $CURRENT_VERSION"
     echo "Fetching latest commit from: $REPO_URL"
-    
+
     LATEST_COMMIT=$(get_latest_github_commit "$REPO_URL")
     CURRENT_COMMIT=$(get_current_git_commit "$CURRENT_VERSION")
-    
+
     if [ -n "$LATEST_COMMIT" ] && [ -n "$CURRENT_COMMIT" ]; then
         # Compare first 7 characters of commit hashes
         LATEST_SHORT=${LATEST_COMMIT:0:7}
         CURRENT_SHORT=${CURRENT_COMMIT:0:7}
-        
+
         if [ "$LATEST_SHORT" != "$CURRENT_SHORT" ]; then
             echo "New commit available: $LATEST_SHORT (current: $CURRENT_SHORT)"
             echo "Rebuilding package with latest commit..."
@@ -120,7 +211,7 @@ if [ -f Dockerfile ]; then
     else
         echo "Could not fetch latest commit from GitHub API"
     fi
-    
+
     # Build the package (always rebuild for git packages to get latest version)
     if [ -f Dockerfile ]; then
       docker build -t $IMAGE_NAME .
