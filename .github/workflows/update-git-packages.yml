@@ -125,6 +125,7 @@ jobs:
           # 3. Change ownership back to host user so GitHub Actions can access the files
           CONTAINER_ID=$(docker run -d -v $(pwd):/home/builder brianrobt/archlinux-aur-dev:latest bash -c "
             sudo chown -R builder:builder /home/builder &&
+            makepkg --syncdeps --noconfirm &&
             makepkg --nobuild &&
             sudo chown -R $(id -u):$(id -g) /home/builder
           ")
