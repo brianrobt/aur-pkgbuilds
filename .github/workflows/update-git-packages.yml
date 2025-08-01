@@ -116,7 +116,16 @@ jobs:
           ")
 
           echo "Waiting for container to finish..."
-          docker wait $CONTAINER_ID
+          EXIT_CODE=$(docker wait $CONTAINER_ID)
+          echo "Container exited with code: $EXIT_CODE"
+
+          if [ "$EXIT_CODE" != "0" ]; then
+            echo "Container failed with exit code $EXIT_CODE"
+            echo "Container logs:"
+            docker logs $CONTAINER_ID
+            docker rm $CONTAINER_ID
+            exit 1
+          fi
 
           echo "Copying updated PKGBUILD from container..."
           docker cp $CONTAINER_ID:/home/builder/PKGBUILD ./PKGBUILD
