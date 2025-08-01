@@ -119,9 +119,14 @@ jobs:
           echo "Original pkgver: $ORIGINAL_PKGVER"
 
           echo "Running makepkg --nobuild in container..."
+          # Run container with volume mount and execute commands:
+          # 1. Change ownership to 'builder' user so makepkg can write to the directory
+          # 2. Run makepkg --nobuild to update PKGBUILD with latest version
+          # 3. Change ownership back to host user so GitHub Actions can access the files
           CONTAINER_ID=$(docker run -d -v $(pwd):/home/builder brianrobt/archlinux-aur-dev:latest bash -c "
             sudo chown -R builder:builder /home/builder &&
-            makepkg --nobuild
+            makepkg --nobuild &&
+            sudo chown -R $(id -u):$(id -g) /home/builder
           ")
 
           echo "Waiting for container to finish..."
