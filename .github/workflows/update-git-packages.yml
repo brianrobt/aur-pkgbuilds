@@ -109,26 +109,26 @@ jobs:
           ORIGINAL_PKGVER=$(grep "^pkgver=" PKGBUILD | sed 's/pkgver=//' | cut -d' ' -f1)
           echo "Original pkgver: $ORIGINAL_PKGVER"
 
-          # Install makepkg in Arch Linux container and run makepkg --nobuild
+          echo "Running makepkg --nobuild in container..."
           CONTAINER_ID=$(docker run -d -v $(pwd):/home/builder brianrobt/archlinux-aur-dev:latest bash -c "
             pacman -Sy --noconfirm pacman-contrib
             makepkg --nobuild
           ")
 
-          # Wait for the container to finish
+          echo "Waiting for container to finish..."
           docker wait $CONTAINER_ID
 
-          # Copy the updated PKGBUILD from the container
+          echo "Copying updated PKGBUILD from container..."
           docker cp $CONTAINER_ID:/home/builder/PKGBUILD ./PKGBUILD
 
-          # Clean up the container
+          echo "Cleaning up container..."
           docker rm $CONTAINER_ID
 
-          # Get the updated pkgver after makepkg --nobuild
+          echo "Getting updated pkgver after makepkg --nobuild..."
           UPDATED_PKGVER=$(grep "^pkgver=" PKGBUILD | sed 's/pkgver=//' | cut -d' ' -f1)
           echo "Updated pkgver: $UPDATED_PKGVER"
 
-          # Compare versions
+          echo "Comparing versions..."
           if [ "$ORIGINAL_PKGVER" != "$UPDATED_PKGVER" ]; then
             echo "Version changed from $ORIGINAL_PKGVER to $UPDATED_PKGVER"
             echo "version_changed=true" >> $GITHUB_OUTPUT
@@ -140,38 +140,40 @@ jobs:
 
           cd ..
 
-          # Now run the original script
+          echo "Running scripts/run_docker.sh..."
           scripts/run_docker.sh --user "Brian Thompson" --email "brianrobt@pm.me" $PKG
 
           cd $PKG-aur
 
-          # Check if PKGBUILD or .SRCINFO have changes
+          echo "Checking if PKGBUILD or .SRCINFO have changes..."
           if git diff --quiet PKGBUILD .SRCINFO 2>/dev/null; then
             echo "No changes detected in PKGBUILD or .SRCINFO"
           else
             echo "Changes detected in PKGBUILD or .SRCINFO:"
             git diff --name-only PKGBUILD .SRCINFO 2>/dev/null || true
 
-            # Add only PKGBUILD and .SRCINFO files
+            echo "Adding PKGBUILD and .SRCINFO files..."
             git add PKGBUILD .SRCINFO
 
-            # Get pkgver value
+            echo "Getting pkgver value..."
             PKGVER=$(grep "^pkgver=" PKGBUILD | sed 's/pkgver=//' | cut -d' ' -f1)
 
-            # Get pkgrel value
+            echo "Getting pkgrel value..."
             PKGREL=$(grep "^pkgrel=" PKGBUILD | sed 's/pkgrel=//')
 
             PKGVERREL="$PKGVER-$PKGREL"
 
-            echo "Running git commit with message: 'build: release $PKG v$PKGVERREL'"
+            echo "Running git commit with message: 'build: release $PKG v$PKGVERREL'..."
             git commit -m "build: release $PKG v$PKGVERREL"
             git push origin master
 
+            echo "Copying PKGBUILD and .SRCINFO files to $PKG directory..."
             cp PKGBUILD ../$PKG/PKGBUILD
             cp .SRCINFO ../$PKG/.SRCINFO
 
             cd ..
 
+            echo "Adding and committing all files to git..."
             git add -A
             git commit -m "build: release $PKG v$PKGVERREL"
             git push origin master
