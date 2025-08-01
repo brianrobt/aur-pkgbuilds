@@ -142,6 +142,13 @@ if [ -n "$GIT_EMAIL_ARG" ]; then
     git config --global user.email "$GIT_EMAIL_ARG"
 fi
 
+# Check if we have proper git authentication for the aur-pkgbuilds repository
+echo "Checking git authentication for aur-pkgbuilds repository..."
+if [ -z "$GITHUB_TOKEN" ]; then
+    echo "Warning: GITHUB_TOKEN not set. Push to aur-pkgbuilds may fail."
+    echo "To fix this, set the GITHUB_TOKEN environment variable with a personal access token."
+fi
+
 PKGNAME=$(grep "^pkgname=" "$PKGNAME_DIR/PKGBUILD" | sed 's/pkgname=//' | tr -d '"' | tr -d "'")
 CONTAINER_NAME="${PKGNAME_DIR}-builder"
 IMAGE_NAME="${PKGNAME_DIR}-aur"
@@ -223,7 +230,19 @@ else
 
     # Push changes to aur-pkgbuilds repository
     echo "Pushing changes to aur-pkgbuilds repository..."
-    git push origin master
+
+    # Configure git to use token-based authentication if GITHUB_TOKEN is available
+    if [ -n "$GITHUB_TOKEN" ]; then
+        echo "Using GitHub token for authentication..."
+        git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/brianrobt/aur-pkgbuilds.git"
+    fi
+
+    if ! git push origin master; then
+        echo "ERROR: Failed to push changes to aur-pkgbuilds repository"
+        echo "Please check your Git credentials and repository permissions"
+        echo "You may need to set the GITHUB_TOKEN environment variable"
+        exit 1
+    fi
 
     echo "Successfully synced local directory with AUR repository and pushed to aur-pkgbuilds"
 
