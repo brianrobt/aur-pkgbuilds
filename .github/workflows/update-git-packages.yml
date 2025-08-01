@@ -120,7 +120,6 @@ jobs:
 
           echo "Running makepkg --nobuild in container..."
           CONTAINER_ID=$(docker run -d -v $(pwd):/home/builder brianrobt/archlinux-aur-dev:latest bash -c "
-            yay -S --noconfirm pacman-contrib
             makepkg --nobuild
           ")
 
