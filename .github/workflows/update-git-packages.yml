@@ -87,6 +87,15 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Debug Docker Permissions
+        run: |
+          whoami
+          id
+          groups
+          ls -la /var/run/docker.sock
+          docker version
+          docker info
+
       - name: Update git package
         id: update-git-package
         env:
@@ -122,7 +131,7 @@ jobs:
           if [ "$EXIT_CODE" != "0" ]; then
             echo "Container failed with exit code $EXIT_CODE"
             echo "Container logs:"
-            sudo docker logs $CONTAINER_ID
+            docker logs $CONTAINER_ID
             docker rm $CONTAINER_ID
             exit 1
           fi
