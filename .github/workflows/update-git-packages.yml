@@ -131,7 +131,16 @@ jobs:
           if [ "$EXIT_CODE" != "0" ]; then
             echo "Container failed with exit code $EXIT_CODE"
             echo "Container logs:"
-            docker logs $CONTAINER_ID
+            if ! docker logs $CONTAINER_ID; then
+              echo "ERROR: Failed to retrieve container logs for container $CONTAINER_ID"
+              echo "This could indicate the container was removed or the logs are inaccessible"
+              echo "Attempting to get container status..."
+              if docker ps -a --filter "id=$CONTAINER_ID" --format "table {{.ID}}\t{{.Status}}\t{{.Names}}" 2>/dev/null; then
+                echo "Container status retrieved successfully"
+              else
+                echo "ERROR: Could not retrieve container status either"
+              fi
+            fi
             docker rm $CONTAINER_ID
             exit 1
           fi
