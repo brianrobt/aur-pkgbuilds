@@ -213,6 +213,9 @@ else
     # Change to the aur-pkgbuilds repository root
     cd ..
 
+    git config user.name "$GIT_USER"
+    git config user.email "$GIT_EMAIL"
+
     # Add and commit the changes to aur-pkgbuilds repository
     echo "Committing updated files to aur-pkgbuilds repository..."
     git add $PKGNAME_DIR/
