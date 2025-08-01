@@ -144,7 +144,7 @@ jobs:
           echo "Building and updating $PKG to version $NEW_VERSION..."
 
           # Run the docker build script
-          scripts/run_docker.sh $PKG
+          scripts/run_docker.sh --user "Brian Thompson" --email "brianrobt@pm.me" $PKG
 
           cd $PKG-aur
 
@@ -154,8 +154,6 @@ jobs:
           else
             echo "Changes detected in PKGBUILD or .SRCINFO:"
             git diff --name-only PKGBUILD .SRCINFO 2>/dev/null || true
-            git config user.email "brianrobt@pm.me"
-            git config user.name "Brian Thompson"
 
             # Add only PKGBUILD and .SRCINFO files
             git add PKGBUILD .SRCINFO
@@ -176,8 +174,6 @@ jobs:
             cp .SRCINFO ../$PKG/.SRCINFO
 
             cd ..
-            git config user.email "brianrobt@pm.me"
-            git config user.name "Brian Thompson"
             git add -A
             git commit -m "build: release $PKG v$PKGVERREL"
             git push origin master
