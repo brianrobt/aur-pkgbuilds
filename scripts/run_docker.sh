@@ -95,6 +95,21 @@ get_current_git_commit() {
     fi
 }
 
+# Function to compare version numbers
+compare_versions() {
+    local version1="$1"
+    local version2="$2"
+
+    # Use sort -V for version comparison (natural sort)
+    if [ "$(printf '%s\n' "$version1" "$version2" | sort -V | head -1)" = "$version1" ] && [ "$version1" != "$version2" ]; then
+        echo "older"
+    elif [ "$(printf '%s\n' "$version1" "$version2" | sort -V | head -1)" = "$version2" ] && [ "$version1" != "$version2" ]; then
+        echo "newer"
+    else
+        echo "equal"
+    fi
+}
+
 # Function to update PKGBUILD version
 update_pkgbuild_version() {
     local pkgbuild_path="$1"
@@ -174,8 +189,44 @@ fi
 git checkout master
 git pull origin master
 
-# Copy local files to the AUR repository
-cp -r ../$PKGNAME_DIR/* .
+# Compare local and AUR versions before copying
+echo "Comparing local and AUR versions..."
+LOCAL_VERSION=$(grep "^pkgver=" ../$PKGNAME_DIR/PKGBUILD | sed 's/pkgver=//' | tr -d '"' | tr -d "'")
+AUR_VERSION=$(grep "^pkgver=" PKGBUILD | sed 's/pkgver=//' | tr -d '"' | tr -d "'")
+
+echo "Local version: $LOCAL_VERSION"
+echo "AUR version: $AUR_VERSION"
+
+VERSION_COMPARISON=$(compare_versions "$LOCAL_VERSION" "$AUR_VERSION")
+
+if [ "$VERSION_COMPARISON" = "newer" ]; then
+    echo "Local version is newer than AUR version. Copying files..."
+    cp -r ../$PKGNAME_DIR/* .
+elif [ "$VERSION_COMPARISON" = "equal" ]; then
+    echo "Local and AUR versions are equal. Skipping file copy."
+else
+    echo "Local version is older than AUR version. Syncing local directory with AUR repository..."
+
+    # Copy AUR repository contents to local directory
+    cp -r ./* ../$PKGNAME_DIR/
+
+    # Change to the aur-pkgbuilds repository root
+    cd ..
+
+    # Add and commit the changes to aur-pkgbuilds repository
+    echo "Committing updated files to aur-pkgbuilds repository..."
+    git add $PKGNAME_DIR/
+    git commit -m "build($PKGNAME): sync with AUR repository (version $AUR_VERSION)"
+
+    # Push changes to aur-pkgbuilds repository
+    echo "Pushing changes to aur-pkgbuilds repository..."
+    git push origin master
+
+    echo "Successfully synced local directory with AUR repository and pushed to aur-pkgbuilds"
+
+    # Change back to AUR repository directory for the rest of the script
+    cd $PKGNAME_DIR-aur
+fi
 
 # Check for version updates
 echo "Checking for version updates..."
