@@ -140,6 +140,8 @@ jobs:
               else
                 echo "ERROR: Could not retrieve container status either"
               fi
+            else
+              echo "Container logs retrieved successfully!"
             fi
             docker rm $CONTAINER_ID
             exit 1
