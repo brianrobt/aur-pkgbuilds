@@ -139,7 +139,7 @@ jobs:
         if: steps.check-version.outputs.has_update == 'true'
         id: update-package
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           PKG="${{ matrix.package }}"
           NEW_VERSION="${{ steps.check-version.outputs.new_version }}"
