@@ -1,9 +1,9 @@
 name: Update GitHub Packages
 
 on:
-  schedule:
-    # Run daily at 3 AM UTC (1 hour after git packages)
-    - cron: '0 3 * * *'
+  # schedule:
+  #   # Run daily at 3 AM UTC (1 hour after git packages)
+  #   - cron: '0 3 * * *'
   workflow_dispatch:
     inputs:
       package:
