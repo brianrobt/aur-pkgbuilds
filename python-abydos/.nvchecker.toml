@@ -1,4 +1,0 @@
-[python-abydos]
-source = "git"
-git = "https://github.com/chrislit/abydos.git"
-prefix = "v"
