@@ -17,4 +17,6 @@ RUN yay -S --noconfirm \
     npm
 
 # Build and install the package
+RUN updpkgsums
 RUN makepkg -sif --noconfirm
+RUN makepkg --printsrcinfo > .SRCINFO
