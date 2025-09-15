@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       package:
-        description: 'Specific package to update (optional, leave empty for all GitHub packages)'
+        description: "Specific package to update (optional, leave empty for all GitHub packages)"
         required: false
         type: string
 
@@ -70,7 +70,9 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           echo "$AUR_SSH_PRIVATE_KEY" > ~/.ssh/aur_key
-          chmod 600 ~/.ssh/aur_key
+          echo "$AUR_SSH_PUBLIC_KEY" > ~/.ssh/aur_key.pub
+          chmod 644 ~/.ssh/aur_key
+          chmod 644 ~/.ssh/aur_key.pub
           ssh-keyscan aur.archlinux.org >> ~/.ssh/known_hosts
           cat >> ~/.ssh/config << EOF
           Host aur.archlinux.org
