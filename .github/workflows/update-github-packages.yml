@@ -179,7 +179,7 @@ jobs:
 
             cd ..
             git add -A
-            git commit -m "build: release $PKG v$PKGVERREL"
+            git commit -m "build($PKG): release v$PKGVERREL"
             git push origin master
 
             echo "pushed=true" >> $GITHUB_OUTPUT
