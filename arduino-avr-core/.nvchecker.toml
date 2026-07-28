@@ -1,3 +1,0 @@
-[arduino-avr-core]
-source = "git"
-git = "https://github.com/arduino/ArduinoCore-avr.git"

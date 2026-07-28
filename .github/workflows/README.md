@@ -2,6 +2,31 @@
 
 This directory contains GitHub Actions workflows for automating AUR package management.
 
+## Publish to AUR
+
+`publish-to-aur.yml` copies `packages/<name>/` into the matching AUR git repo and pushes.
+
+### Triggers
+
+- **Manual:** Actions → "Publish to AUR" → Run workflow (optional package name, optional dry-run)
+- **Push:** changes under `packages/**` on `master`
+
+### Secrets
+
+- `AUR_SSH_PRIVATE_KEY` — private key whose public half is registered on your AUR account
+
+### Local usage
+
+```bash
+./scripts/push-to-aur.sh --dry-run gvm2-git
+./scripts/push-to-aur.sh gvm2-git
+./scripts/push-to-aur.sh --all
+```
+
+Package → AUR URL mapping lives in `scripts/repo_urls.txt` (defaults to `ssh://aur@aur.archlinux.org/<dir>.git`).
+
+> The older `update-git-packages.yml` / `update-github-packages.yml` workflows still assume the pre-`packages/` layout and nested `*-aur` clones. Prefer this publish workflow until those are rewritten.
+
 ## Update Git Packages Workflow
 
 The `update-git-packages.yml` workflow automatically updates git packages by:

@@ -1,4 +1,0 @@
-[rapidyaml]
-source = "git"
-git = "https://github.com/biojppm/rapidyaml.git"
-prefix = "v"

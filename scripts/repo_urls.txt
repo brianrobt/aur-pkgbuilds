@@ -1,24 +1,4 @@
-alist: ssh://aur@aur.archlinux.org/alist.git
-arduino-avr-core: ssh://aur@aur.archlinux.org/arduino-avr-core.git
-gnome-shell-extension-panel-osd: ssh://aur@aur.archlinux.org/gnome-shell-extension-panel-osd.git
-htmlhint: ssh://aur@aur.archlinux.org/htmlhint.git
-kpeople5: ssh://aur@aur.archlinux.org/kpeople5.git
-micromamba: ssh://aur@aur.archlinux.org/micromamba.git
-netclient: ssh://aur@aur.archlinux.org/netclient.git
-nmctl: ssh://aur@aur.archlinux.org/nmctl.git
-openmohaa: ssh://aur@aur.archlinux.org/openmohaa.git
-openmohaa-git: ssh://aur@aur.archlinux.org/openmohaa-git.git
-outwiker: ssh://aur@aur.archlinux.org/outwiker.git
-proton-pass-bin: ssh://aur@aur.archlinux.org/proton-pass-bin.git
-python-abydos: ssh://aur@aur.archlinux.org/python-abydos.git
-python-conda: ssh://aur@aur.archlinux.org/python-conda.git
-python-conda-libmamba-solver: ssh://aur@aur.archlinux.org/python-conda-libmamba-solver.git
-python-hunspell: ssh://aur@aur.archlinux.org/python-hunspell.git
-python-jproperties: ssh://aur@aur.archlinux.org/python-jproperties.git
-python-libmamba: ssh://aur@aur.archlinux.org/python-libmamba.git
-python-npyscreen: ssh://aur@aur.archlinux.org/python-npyscreen.git
-python-pytest-freezegun: ssh://aur@aur.archlinux.org/python-pytest-freezegun.git
-python-typed-ast: ssh://aur@aur.archlinux.org/python-typed-ast.git
-rapidyaml: ssh://aur@aur.archlinux.org/rapidyaml.git
-rot8-git: ssh://aur@aur.archlinux.org/rot8-git.git
-stable-diffusion-cpp-vulkan-git: ssh://aur@aur.archlinux.org/stable-diffusion.cpp-vulkan-git.git
+# Map package directory name -> AUR git URL.
+# Only list packages you maintain or co-maintain.
+# If omitted, push-to-aur.sh defaults to ssh://aur@aur.archlinux.org/<dir>.git
+gvm2-git: ssh://aur@aur.archlinux.org/gvm2-git.git

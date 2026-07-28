@@ -1,0 +1,104 @@
+name: Publish to AUR
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: "Package under packages/ (empty = all)"
+        required: false
+        type: string
+      dry_run:
+        description: "Sync and show diff without pushing to AUR"
+        required: false
+        type: boolean
+        default: false
+  # Publish when package sources land on master (after you merge bumps locally/via PR).
+  push:
+    branches: [master]
+    paths:
+      - 'packages/**'
+      - 'scripts/push-to-aur.sh'
+      - 'scripts/repo_urls.txt'
+      - '.github/workflows/publish-to-aur.yml'
+
+concurrency:
+  group: publish-to-aur-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+  GIT_AUTHOR_NAME: Brian Thompson
+  GIT_AUTHOR_EMAIL: brianrobt@pm.me
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+
+      - name: Require AUR secrets
+        run: |
+          # AUR auth is the SSH key; account is implied by the registered pubkey.
+          # Clone URLs already use aur@aur.archlinux.org (User aur).
+          if [ -z "${AUR_SSH_PRIVATE_KEY}" ]; then
+            echo "Missing AUR_SSH_PRIVATE_KEY repository secret." >&2
+            exit 1
+          fi
+
+      - name: Setup SSH for AUR
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$AUR_SSH_PRIVATE_KEY" > ~/.ssh/aur_key
+          chmod 600 ~/.ssh/aur_key
+          ssh-keyscan aur.archlinux.org >> ~/.ssh/known_hosts
+          # Persist for later steps (ssh-agent from this step would not)
+          echo "GIT_SSH_COMMAND=ssh -i $HOME/.ssh/aur_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes" >> "$GITHUB_ENV"
+
+      - name: Resolve packages
+        id: pkgs
+        run: |
+          INPUT="${{ github.event.inputs.package }}"
+          if [ -n "$INPUT" ]; then
+            PACKAGES="$INPUT"
+          else
+            mapfile -t dirs < <(find packages -mindepth 1 -maxdepth 1 -type d -exec test -f '{}/PKGBUILD' \; -print | sort)
+            if [ ${#dirs[@]} -eq 0 ]; then
+              echo "No packages found under packages/" >&2
+              exit 1
+            fi
+            names=()
+            for d in "${dirs[@]}"; do
+              names+=("$(basename "$d")")
+            done
+            PACKAGES="${names[*]}"
+          fi
+          echo "packages=$PACKAGES" >> "$GITHUB_OUTPUT"
+          echo "Resolved packages: $PACKAGES"
+
+      - name: Push to AUR
+        env:
+          DRY_RUN_INPUT: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+        run: |
+          chmod +x scripts/push-to-aur.sh
+          ARGS=(${{ steps.pkgs.outputs.packages }})
+          if [ "$DRY_RUN_INPUT" = "true" ]; then
+            scripts/push-to-aur.sh --dry-run "${ARGS[@]}"
+          else
+            scripts/push-to-aur.sh "${ARGS[@]}"
+          fi
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## Publish to AUR"
+            echo ""
+            echo "- **Packages:** ${{ steps.pkgs.outputs.packages }}"
+            echo "- **Dry run:** ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}"
+            echo "- **Trigger:** ${{ github.event_name }}"
+          } >> "$GITHUB_STEP_SUMMARY"
