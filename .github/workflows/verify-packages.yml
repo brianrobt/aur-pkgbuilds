@@ -71,18 +71,27 @@ jobs:
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
 
       - name: Build, install, and smoke-test ${{ matrix.package }}
+        id: build
         env:
           PKG: ${{ matrix.package }}
         run: |
           set -euo pipefail
           SRC="$GITHUB_WORKSPACE/packages/$PKG"
+          OUT="$RUNNER_TEMP/verify-$PKG"
           if [ ! -f "$SRC/PKGBUILD" ]; then
             echo "Missing $SRC/PKGBUILD" >&2
             exit 1
           fi
 
+          rm -rf "$OUT"
+          mkdir -p "$OUT"
+
           docker run --rm \
-            -v "$SRC":/pkg \
+            -e HOST_UID="$(id -u)" \
+            -e HOST_GID="$(id -g)" \
+            -e PKG="$PKG" \
+            -v "$SRC":/pkg:ro \
+            -v "$OUT":/out \
             -w /pkg \
             archlinux:latest \
             bash -lc '
@@ -97,7 +106,7 @@ jobs:
               echo "builder ALL=(ALL) NOPASSWD: ALL" >/etc/sudoers.d/builder
               chmod 440 /etc/sudoers.d/builder
 
-              # Work in builder home so makepkg can write freely
+              # Work in builder home so makepkg can write freely (pkg mount is read-only)
               BUILD="/home/builder/pkg"
               rm -rf "$BUILD"
               cp -a /pkg "$BUILD"
@@ -128,7 +137,7 @@ jobs:
               echo "::endgroup::"
 
               echo "::group::smoke test"
-              pacman -Ql "'"$PKG"'"
+              pacman -Ql "$PKG"
               if [ -x /usr/bin/gvm2-setup ]; then
                 test -f /etc/profile.d/gvm2.sh
                 test -d /usr/share/gvm2
@@ -136,10 +145,9 @@ jobs:
               fi
               echo "::endgroup::"
 
-              # Surface results back to the runner for the step summary
-              mkdir -p /pkg/.ci
-              pacman -Ql "'"$PKG"'" >"/pkg/.ci/files.txt"
-              printf "%s\n" "${pkgs[@]}" >"/pkg/.ci/artifacts.txt"
+              pacman -Ql "$PKG" > /out/files.txt
+              printf "%s\n" "${pkgs[@]}" > /out/artifacts.txt
+              chown -R "$HOST_UID:$HOST_GID" /out
             '
 
       - name: Summary
@@ -147,17 +155,17 @@ jobs:
         env:
           PKG: ${{ matrix.package }}
         run: |
+          OUT="$RUNNER_TEMP/verify-$PKG"
           {
             echo "## ${PKG}"
             echo ""
-            if [ -f "packages/$PKG/.ci/artifacts.txt" ]; then
-              echo "- **Artifacts:** $(tr '\n' ' ' < "packages/$PKG/.ci/artifacts.txt")"
+            if [ -f "$OUT/artifacts.txt" ]; then
+              echo "- **Artifacts:** $(tr '\n' ' ' < "$OUT/artifacts.txt")"
               echo "- **Installed files:**"
               echo '```'
-              cat "packages/$PKG/.ci/files.txt"
+              cat "$OUT/files.txt"
               echo '```'
             else
               echo "- **Status:** build failed before summary artifacts were written"
             fi
           } >> "$GITHUB_STEP_SUMMARY"
-          rm -rf "packages/$PKG/.ci"
