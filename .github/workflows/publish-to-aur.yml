@@ -12,7 +12,7 @@ on:
         required: false
         type: boolean
         default: false
-  # Publish when package sources land on master (after you merge bumps locally/via PR).
+  # Publish when package sources land on master (after verify succeeds).
   push:
     branches: [master]
     paths:
@@ -34,7 +34,13 @@ env:
   GIT_AUTHOR_EMAIL: brianrobt@pm.me
 
 jobs:
+  verify:
+    uses: ./.github/workflows/verify-packages.yml
+    with:
+      package: ${{ github.event_name == 'workflow_dispatch' && inputs.package || '' }}
+
   publish:
+    needs: verify
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -101,4 +107,5 @@ jobs:
             echo "- **Packages:** ${{ steps.pkgs.outputs.packages }}"
             echo "- **Dry run:** ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}"
             echo "- **Trigger:** ${{ github.event_name }}"
+            echo "- **Verify:** passed (required)"
           } >> "$GITHUB_STEP_SUMMARY"

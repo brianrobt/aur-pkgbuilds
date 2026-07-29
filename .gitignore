@@ -4,6 +4,14 @@ build/
 *-aur/
 *.code-workspace
 .DS_Store
+packages/**/pkg
+packages/**/src
+packages/**/*.tar.zst
+packages/**/*.src.tar.*
+packages/**/*.log
+packages/**/*.tar.gz
+packages/**/*.tar.bz2
+packages/**/*.zip
 
 # Dockerfiles for packages I don't maintain
 proton-pass-bin/Dockerfile

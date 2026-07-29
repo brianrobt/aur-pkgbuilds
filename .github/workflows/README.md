@@ -2,6 +2,18 @@
 
 This directory contains GitHub Actions workflows for automating AUR package management.
 
+## Verify packages
+
+`verify-packages.yml` builds each package under `packages/` in an **Arch Linux** container with `makepkg`, installs the resulting archive, and runs light smoke checks (`namcap`, `pacman -Ql`, package-specific file checks).
+
+### Triggers
+
+- **Pull requests** that touch `packages/**`
+- **Manual:** Actions → "Verify packages"
+- **Reusable:** called by **Publish to AUR** before any AUR push
+
+This is not a full `pkgctl` clean chroot, but it catches broken PKGBUILDs, missing sources/files, bad deps, and failed installs before publish.
+
 ## Publish to AUR
 
 `publish-to-aur.yml` copies `packages/<name>/` into the matching AUR git repo and pushes.
@@ -10,6 +22,8 @@ This directory contains GitHub Actions workflows for automating AUR package mana
 
 - **Manual:** Actions → "Publish to AUR" → Run workflow (optional package name, optional dry-run)
 - **Push:** changes under `packages/**` on `master`
+
+Publish always runs **Verify packages** first and skips the AUR push if the build fails.
 
 ### Secrets
 
@@ -25,7 +39,7 @@ This directory contains GitHub Actions workflows for automating AUR package mana
 
 Package → AUR URL mapping lives in `scripts/repo_urls.txt` (defaults to `ssh://aur@aur.archlinux.org/<dir>.git`).
 
-> The older `update-git-packages.yml` / `update-github-packages.yml` workflows still assume the pre-`packages/` layout and nested `*-aur` clones. Prefer this publish workflow until those are rewritten.
+> The older `update-git-packages.yml` / `update-github-packages.yml` workflows still assume the pre-`packages/` layout and nested `*-aur` clones. Prefer verify + publish until those are rewritten.
 
 ## Update Git Packages Workflow
 
