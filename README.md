@@ -2,165 +2,58 @@
 
 A collection of PKGBUILDs for packages I maintain in the Arch User Repository (AUR).
 
-## About
+## Layout
 
-This repository contains build scripts and configuration files for 20+ packages in the AUR, including development tools, Python libraries, games, and system utilities. Each package is organized as a git submodule linked to its corresponding AUR repository, enabling streamlined maintenance and automated workflows.
-
-### Package Categories
-
-- **Development Tools**: `htmlhint`, `micromamba`, `rapidyaml`, `arduino-avr-core`
-- **Python Libraries**: `python-conda`, `python-libmamba`, `python-abydos`, `python-hunspell`, and more
-- **System Utilities**: `netclient`, `nmctl`, `rot8-git`, `gnome-shell-extension-panel-osd`
-- **Games**: `openmohaa`, `openmohaa-git`
-- **Applications**: `alist`, `outwiker`, `proton-pass-bin`, `stable-diffusion-cpp-vulkan-git`
-
-## Features
-
-- **Automated Build System**: Docker-based builds for consistent packaging
-- **Submodule Management**: Synchronized git submodules for each AUR package
-- **Makefile Automation**: Simple commands for common maintenance tasks
-- **Batch Operations**: Clone, build, and update multiple packages at once
-- **GitHub Actions**: Automated git package updates with AUR integration
-
-## Usage: Makefile Commands
-
-This repository provides a Makefile to automate common package maintenance tasks. Below are the most useful commands:
-
-### Clone and Sync Packages
-
-**Clone and sync a single package from its submodule:**
-```sh
-make clone PKG=<package-name>
-# Example:
-make clone PKG=alist
+```text
+packages/<pkg>/     # PKGBUILD + supporting files (source of truth)
+scripts/            # import / publish helpers
+.github/workflows/  # verify (Arch makepkg) + publish to AUR
 ```
 
-**Add `CLEAN=true` to remove any temporary directories:**
+Each package is plain files in this monorepo (not git submodules). Publish copies
+`packages/<pkg>/` to the matching AUR git repo.
+
+## Makefile
+
 ```sh
-make clone PKG=alist CLEAN=true
-```
+make help
+make list
 
-**Clone and sync all packages:**
-```sh
-make clone-all
-# Or with cleanup:
-make clone-all CLEAN=true
-```
+# Adopt / import from AUR (no .git directory)
+make import PKG=netclient
+make import PKG=netclient FORCE=1
+make import PKG=netclient SSH=1
 
-### Build and Run in Docker
+# Bump upstream version + regenerate checksums / .SRCINFO (uses Docker/Arch)
+make update PKG=jay-aur VER=7.5.5
+make update PKG=jay-aur VER=7.5.5 PKGREL=2
 
-**Build and run a package in Docker (if a Dockerfile is present):**
-```sh
-make aur-build PKG=<package-name>
-# Example:
-make aur-build PKG=alist
-```
+# After editing PKGBUILD yourself (pkgver already set)
+make refresh PKG=jay-aur
 
-### Submodule Management
+# Publish to AUR
+make push PKG=gvm2-git
+make push PKG=gvm2-git DRY_RUN=1
+make push-all
 
-**Initialize all submodules:**
-```sh
-make init-submodules
-```
-
-**Update all submodules to the latest commit:**
-```sh
-make update-aur-repos
-```
-
-### Clean Temporary Files
-
-**Clean up temporary files and directories:**
-```sh
+# Remove local makepkg leftovers
 make clean
 ```
 
-### Help
-
-**Show all available commands:**
-```sh
-make help
-```
-
-## Prerequisites
-
-- **Linux**, **macOS**, or **WSL**
-- **Git** with submodule support
-- **Docker** (for containerized builds)
-- **SSH access** to AUR (for maintainers)
-
-## Repository Structure
-
-```
-aur-pkgbuilds/
-├── Makefile              # Main automation commands
-├── scripts/              # Helper scripts
-│   ├── repo_urls.txt    # AUR repository URLs
-│   ├── clone.sh         # Package cloning script
-│   └── aur-build.sh     # Docker build script
-├── <package-name>/       # Local package files
-│   ├── PKGBUILD         # Build script
-│   ├── Dockerfile       # Docker build config (if applicable)
-│   └── <package-name>-aur/  # AUR submodule
-└── README.md
-```
-
-## Advanced Usage
-
-You can also call the scripts in `scripts/` directly for advanced usage:
-
-```bash
-# Clone a specific package
-./scripts/clone.sh <package-name>
-
-# Build in Docker
-./scripts/aur-build.sh <package-name>
-
-# Update all AUR repositories
-./scripts/pull_all_repos.sh
-
-# Test git package updates locally
-./scripts/test-git-update.sh <package-name>
-
-# Setup AUR SSH keys for GitHub Actions
-./scripts/setup-aur-ssh.sh
-```
-
-See the Makefile or run `make help` for more details.
+Scripts: `scripts/import-from-aur.sh`, `scripts/update-pkgbuild.sh`, `scripts/push-to-aur.sh`.
 
 ## GitHub Actions
 
-This repository includes automated workflows for maintaining packages:
+- **Verify packages** — build/install each `packages/*/PKGBUILD` in Arch Linux (PRs + before publish)
+- **Publish to AUR** — push to AUR after verify succeeds
 
-### Automated Git Package Updates
+See [`.github/workflows/README.md`](.github/workflows/README.md).
 
-The `update-git-packages.yml` workflow automatically:
-- Builds git packages in Docker containers
-- Updates PKGBUILD and .SRCINFO files with latest versions
-- Commits changes to this repository
-- Pushes updates to AUR (if configured)
+## Prerequisites
 
-### Automated GitHub Package Updates
-
-The `update-github-packages.yml` workflow automatically:
-- Checks for new versions of GitHub-hosted packages using `aurvt`
-- Only builds packages when new versions are detected
-- Updates PKGBUILD and .SRCINFO files with latest versions
-- Commits changes to this repository
-- Pushes updates to AUR (if configured)
-
-**Setup:**
-1. Run `./scripts/setup-aur-ssh.sh` to generate SSH keys
-2. Add the public key to your AUR account
-3. Add `AUR_USERNAME` and `AUR_SSH_PRIVATE_KEY` secrets to GitHub
-4. Git packages workflow runs daily at 2 AM UTC
-5. GitHub packages workflow runs daily at 3 AM UTC
-
-**Manual Execution:**
-- Go to Actions tab → "Update Git Packages" or "Update GitHub Packages" → "Run workflow"
-- Optionally specify a single package name
-
-For detailed setup instructions, see [`.github/workflows/README.md`](.github/workflows/README.md).
+- Git
+- SSH key registered on your AUR account (for `make push`)
+- Docker (optional; used by CI verify, not required locally)
 
 ## Contributing
 

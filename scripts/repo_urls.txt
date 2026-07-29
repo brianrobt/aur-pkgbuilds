@@ -2,3 +2,7 @@
 # Only list packages you maintain or co-maintain.
 # If omitted, push-to-aur.sh defaults to ssh://aur@aur.archlinux.org/<dir>.git
 gvm2-git: ssh://aur@aur.archlinux.org/gvm2-git.git
+python-autoregistry: ssh://aur@aur.archlinux.org/python-autoregistry.git
+quirc: ssh://aur@aur.archlinux.org/quirc.git
+kal-lang: ssh://aur@aur.archlinux.org/kal-lang.git
+python-nameparser: ssh://aur@aur.archlinux.org/python-nameparser.git
