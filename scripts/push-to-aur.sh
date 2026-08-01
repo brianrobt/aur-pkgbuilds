@@ -95,12 +95,25 @@ sync_package_files() {
     "${src}/" "${dest}/"
 }
 
+# push_one exit codes:
+#   0 = success (or already up to date / dry-run)
+#   1 = package-specific failure (caller should continue with other packages)
+#   2 = AUR unavailable / maintenance (caller should abort remaining packages)
+is_aur_maintenance_error() {
+  local log_file="$1"
+  grep -qiE \
+    'down due to maintenance|will be back soon|aur is down' \
+    "$log_file"
+}
+
 push_one() {
   local pkg="$1"
   local pkg_dir="${PACKAGES_DIR}/${pkg}"
   local aur_url
   local workdir
   local pkgver pkgrel message
+  local status
+  local clone_log
 
   if [[ ! -d "$pkg_dir" ]]; then
     echo "error: package directory not found: $pkg_dir" >&2
@@ -117,22 +130,53 @@ push_one() {
 
   aur_url="$(aur_url_for "$pkg")"
   workdir="$(mktemp -d "${TMPDIR:-/tmp}/aur-push-${pkg}.XXXXXX")"
+  clone_log="$(mktemp "${TMPDIR:-/tmp}/aur-clone-${pkg}.XXXXXX.log")"
 
-  cleanup() { rm -rf "$workdir"; }
+  cleanup() {
+    rm -rf "$workdir"
+    rm -f "$clone_log"
+  }
   trap cleanup EXIT
 
   echo "==> ${pkg}: cloning ${aur_url}"
-  git clone --depth 1 "$aur_url" "$workdir"
+  # Note: callers may invoke this function under `if` / `||`, which disables
+  # `set -e` inside the function. Check clone (and later git ops) explicitly.
+  if ! git clone --depth 1 "$aur_url" "$workdir" >"$clone_log" 2>&1; then
+    cat "$clone_log" >&2
+    if is_aur_maintenance_error "$clone_log"; then
+      echo "error: ${pkg}: AUR is down for maintenance" >&2
+      trap - EXIT
+      cleanup
+      return 2
+    fi
+    echo "error: ${pkg}: failed to clone ${aur_url}" >&2
+    echo "error: ${pkg}: check SSH key registration and that the AUR package exists" >&2
+    trap - EXIT
+    cleanup
+    return 1
+  fi
+  # Clone can print banners to the log even on success; show them.
+  if [[ -s "$clone_log" ]]; then
+    cat "$clone_log" >&2
+  fi
+  if [[ ! -d "${workdir}/.git" ]]; then
+    echo "error: ${pkg}: clone succeeded but ${workdir} is not a git repo" >&2
+    trap - EXIT
+    cleanup
+    return 1
+  fi
 
   echo "==> ${pkg}: syncing files from packages/${pkg}"
   sync_package_files "$pkg_dir" "$workdir"
 
-  (
+  if ! (
+    set -euo pipefail
     cd "$workdir"
     git config user.name "$GIT_AUTHOR_NAME"
     git config user.email "$GIT_AUTHOR_EMAIL"
 
-    if [[ -z "$(git status --porcelain)" ]]; then
+    status="$(git status --porcelain)"
+    if [[ -z "${status}" ]]; then
       echo "==> ${pkg}: AUR already up to date"
       exit 0
     fi
@@ -155,7 +199,12 @@ push_one() {
     # AUR uses master
     git push origin HEAD:master
     echo "==> ${pkg}: pushed to AUR"
-  )
+  ); then
+    echo "error: ${pkg}: git update/push failed" >&2
+    trap - EXIT
+    cleanup
+    return 1
+  fi
 
   trap - EXIT
   cleanup
@@ -166,8 +215,14 @@ echo "Packages: ${PACKAGES[*]}"
 
 failed=0
 for pkg in "${PACKAGES[@]}"; do
-  if ! push_one "$pkg"; then
-    echo "error: failed to push ${pkg}" >&2
+  rc=0
+  push_one "$pkg" || rc=$?
+  if [[ "$rc" -eq 2 ]]; then
+    echo "error: AUR maintenance detected; aborting remaining packages" >&2
+    exit 2
+  fi
+  if [[ "$rc" -ne 0 ]]; then
+    echo "error: failed to push ${pkg} (continuing with remaining packages)" >&2
     failed=1
   fi
 done
