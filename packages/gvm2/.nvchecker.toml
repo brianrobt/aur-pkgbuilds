@@ -1,0 +1,4 @@
+[gvm2]
+source = "git"
+git = "https://github.com/brianrobt/gvm2.git"
+prefix = "v"
