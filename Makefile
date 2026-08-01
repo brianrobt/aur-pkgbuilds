@@ -7,6 +7,7 @@
 #   make refresh PKG=jay-aur
 #   make push PKG=gvm2-git DRY_RUN=1
 #   make push-all
+#   make check-updates
 #   make clean
 
 .DEFAULT_GOAL := help
@@ -22,7 +23,7 @@ SSH     ?= 0
 DRY_RUN ?= 0
 DOCKER  ?= 0
 
-.PHONY: help list import update refresh push push-all clean
+.PHONY: help list import update refresh push push-all check-updates clean
 
 help:
 	@echo "AUR PKGBUILD helpers"
@@ -38,6 +39,7 @@ help:
 	@echo "  make push PKG=<name> DRY_RUN=1         Show AUR diff without pushing"
 	@echo "  make push-all                          Push every package to AUR"
 	@echo "  make push-all DRY_RUN=1                Dry-run all packages"
+	@echo "  make check-updates                     Run nvchecker vs packages/*/.nvchecker.toml"
 	@echo "  make clean                             Remove makepkg build artifacts"
 	@echo ""
 	@echo "Examples:"
@@ -45,6 +47,7 @@ help:
 	@echo "  make refresh PKG=jay-aur"
 	@echo "  make update PKG=jay-aur VER=7.5.5 DOCKER=1   # force Arch container"
 	@echo "  make push PKG=gvm2-git DRY_RUN=1"
+	@echo "  make check-updates"
 
 list:
 	@find $(PACKAGES_DIR) -mindepth 1 -maxdepth 1 -type d \
@@ -96,12 +99,9 @@ push-all:
 	if [ "$(DRY_RUN)" = "1" ]; then args="--dry-run $$args"; fi; \
 	$(SCRIPTS)/push-to-aur.sh $$args
 
-<<<<<<< Updated upstream
-=======
 check-updates:
 	@$(SCRIPTS)/check-updates.py
 
->>>>>>> Stashed changes
 clean:
 	@echo "Removing makepkg artifacts under $(PACKAGES_DIR)/ ..."
 	@rm -rf $(PACKAGES_DIR)/*/src \

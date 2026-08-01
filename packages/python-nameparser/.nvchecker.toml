@@ -1,0 +1,5 @@
+[python-nameparser]
+source = "github"
+github = "derek73/python-nameparser"
+use_max_tag = true
+prefix = "v"

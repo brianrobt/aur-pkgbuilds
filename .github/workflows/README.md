@@ -39,202 +39,41 @@ Publish always runs **Verify packages** first and skips the AUR push if the buil
 
 Package → AUR URL mapping lives in `scripts/repo_urls.txt` (defaults to `ssh://aur@aur.archlinux.org/<dir>.git`).
 
-> The older `update-git-packages.yml` / `update-github-packages.yml` workflows still assume the pre-`packages/` layout and nested `*-aur` clones. Prefer verify + publish until those are rewritten.
+## Check package updates (nvchecker)
 
-## Update Git Packages Workflow
-
-The `update-git-packages.yml` workflow automatically updates git packages by:
-
-1. **Building packages in Docker containers** using the existing Dockerfiles
-2. **Updating PKGBUILD and .SRCINFO files** with the latest git versions
-3. **Committing changes** to this repository
-4. **Pushing updates to AUR** (if configured)
+`nvchecker.yml` runs [nvchecker](https://github.com/lilydjwg/nvchecker) against every `packages/*/.nvchecker.toml`, compares results to each package's `pkgver`, and emails a report to `brianrobt@pm.me`.
 
 ### Triggers
 
-- **Scheduled**: Runs daily at 2 AM UTC
-- **Manual**: Can be triggered manually with optional package selection
+- **Scheduled:** daily at 14:00 UTC
+- **Manual:** Actions → "Check package updates (nvchecker)"
 
-### Setup Requirements
+### Email contents
 
-#### 1. Repository Secrets
+- Updates: package name with `old -> new` versions
+- Errors: nvchecker/setup failures (missing config, API errors, etc.)
+- Otherwise: `No AUR packages need to be updated.`
 
-Add these secrets to your GitHub repository settings:
+### Secrets (SMTP)
 
-- `AUR_USERNAME`: Your AUR username
-- `AUR_SSH_PRIVATE_KEY`: Your AUR SSH private key
+Required for the email step (any SMTP provider that can send mail; recipient is ProtonMail):
 
-#### 2. AUR SSH Key Setup
+| Secret | Purpose |
+|--------|---------|
+| `MAIL_SERVER` | SMTP host (e.g. `smtp.gmail.com`) |
+| `MAIL_USERNAME` | SMTP username / From address |
+| `MAIL_PASSWORD` | SMTP password or app password |
 
-1. Generate an SSH key pair for AUR access:
-   ```bash
-   ssh-keygen -t ed25519 -C "your-email@example.com" -f ~/.ssh/aur_key
-   ```
+Port is fixed at `465` (TLS) in the workflow. For Gmail, use an App Password — not your account password.
 
-2. Add the public key to your AUR account:
-   - Copy the contents of `~/.ssh/aur_key.pub`
-   - Go to https://aur.archlinux.org/account/
-   - Add the SSH key to your account
+### Local usage
 
-<<<<<<< Updated upstream
-3. Add the private key to GitHub secrets:
-   - Copy the contents of `~/.ssh/aur_key`
-   - Add as `AUR_SSH_PRIVATE_KEY` secret
-
-### How It Works
-
-1. **Package Discovery**: Finds all directories ending with `-git`
-2. **Docker Build**: Builds each package using its Dockerfile
-3. **Version Update**: Runs `makepkg --printsrcinfo` to update versions
-4. **File Extraction**: Copies updated PKGBUILD and .SRCINFO from containers
-5. **Repository Update**: Commits changes to this repository
-6. **AUR Push**: Pushes updates to AUR repositories (if configured)
-
-### Supported Packages
-
-The workflow automatically detects and processes these git packages:
-
-- `openmohaa-git`
-- `rot8-git`
-- `stable-diffusion-cpp-vulkan-git`
-
-### Manual Execution
-
-You can manually trigger the workflow:
-
-1. Go to the "Actions" tab in your GitHub repository
-2. Select "Update Git Packages"
-3. Click "Run workflow"
-4. Optionally specify a single package name
-5. Click "Run workflow"
-
-### Troubleshooting
-
-#### Workflow Fails to Build
-
-- Check that Dockerfiles exist and are valid
-- Verify build dependencies are available
-- Check container logs for specific errors
-
-#### AUR Push Fails
-
-- Verify AUR credentials are correctly set
-- Check SSH key permissions and format
-- Ensure AUR package names match PKGBUILD pkgname
-
-#### No Changes Detected
-
-- This is normal if packages are already up to date
-- Check if `pkgver()` functions are working correctly
-- Verify git repositories are accessible
-
-### Security Notes
-
-- SSH keys are stored as GitHub secrets and are encrypted
-- Keys are only used during workflow execution
-- Containers are cleaned up after each run
-- No persistent storage of sensitive data
-
-### Customization
-
-To add new git packages:
-
-1. Create a directory named `package-name-git`
-2. Add a valid Dockerfile
-3. Include PKGBUILD and .SRCINFO files
-4. The workflow will automatically detect and process it
-
-To modify the schedule:
-
-Edit the `cron` expression in the workflow file:
-```yaml
-schedule:
-  - cron: '0 2 * * *'  # Daily at 2 AM UTC
-=======
 ```bash
 brew install nvchecker   # or: pip install nvchecker
 make check-updates
 # or: ./scripts/check-updates.py
->>>>>>> Stashed changes
 ```
 
-## Update GitHub Packages Workflow
+`gvm2-git` (VCS / `pkgver()` packages) intentionally has no `.nvchecker.toml`.
 
-The `update-github-packages.yml` workflow automatically checks for new versions of GitHub-hosted packages and builds them when updates are available:
-
-1. **Version Checking**: Uses `aurvt` to check for new versions on GitHub
-2. **Selective Building**: Only builds packages when new versions are detected
-3. **Docker Build**: Builds packages using existing Dockerfiles
-4. **AUR Updates**: Pushes updates to both this repository and AUR
-
-### Triggers
-
-- **Scheduled**: Runs daily at 3 AM UTC (1 hour after git packages)
-- **Manual**: Can be triggered manually with optional package selection
-
-### How It Works
-
-1. **Package Discovery**: Finds all directories that:
-   - Don't end with `-git`
-   - Have `github.com` in their PKGBUILD url field
-2. **Version Check**: Runs `aurvt <package>` to check for new versions
-3. **Conditional Build**: Only proceeds if a new version is available
-4. **Docker Build**: Uses `scripts/run_docker.sh` to build packages
-5. **Repository Update**: Commits changes to this repository
-6. **AUR Push**: Pushes updates to AUR repositories (if configured)
-
-### Supported Packages
-
-The workflow automatically detects and processes packages like:
-
-- `alist` (GitHub: AlistGo/alist)
-- `micromamba` (GitHub: mamba-org/micromamba)
-- `proton-pass-bin` (GitHub: ProtonPass/pass-extension)
-- And any other packages with GitHub URLs in their PKGBUILD
-
-### Manual Execution
-
-You can manually trigger the workflow:
-
-1. Go to the "Actions" tab in your GitHub repository
-2. Select "Update GitHub Packages"
-3. Click "Run workflow"
-4. Optionally specify a single package name
-5. Click "Run workflow"
-
-### Troubleshooting
-
-#### aurvt Command Fails
-
-- Verify the package has a valid GitHub URL in its PKGBUILD
-- Check that the GitHub repository has releases
-- Ensure the package directory structure is correct
-
-#### No Updates Detected
-
-- This is normal if packages are already at the latest version
-- Check that the GitHub repository has recent releases
-- Verify the PKGBUILD url field points to the correct GitHub repository
-
-#### Build Fails After Version Update
-
-- Check that the new version is compatible with the build process
-- Verify all dependencies are available
-- Check container logs for specific errors
-
-### Customization
-
-To add new GitHub packages:
-
-1. Create a package directory with a valid PKGBUILD
-2. Ensure the `url` field in PKGBUILD contains `github.com`
-3. Add a Dockerfile if needed for building
-4. The workflow will automatically detect and process it
-
-To modify the schedule:
-
-Edit the `cron` expression in the workflow file:
-```yaml
-schedule:
-  - cron: '0 3 * * *'  # Daily at 3 AM UTC
-```
+> The older `update-git-packages.yml` / `update-github-packages.yml` workflows still assume the pre-`packages/` layout and nested `*-aur` clones. Prefer verify + publish + nvchecker email until those are rewritten.
