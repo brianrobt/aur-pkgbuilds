@@ -1,0 +1,19 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "aur-pkgbuilds"
+version = "0.1.0"
+description = "Maintainer tooling for this AUR PKGBUILDs monorepo"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "nvchecker==2.21",
+  # nvchecker imports this at runtime but does not declare it (2.21).
+  "packaging>=24",
+]
+
+# Dependency-only project: install pulls nvchecker (+ its transitive deps).
+[tool.hatch.build.targets.wheel]
+bypass-selection = true

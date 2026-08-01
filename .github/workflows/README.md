@@ -69,7 +69,8 @@ Port is fixed at `465` (TLS) in the workflow. For Gmail, use an App Password —
 ### Local usage
 
 ```bash
-brew install nvchecker   # or: pip install nvchecker
+pip install .             # from repo root (preferred; uses pyproject.toml)
+# or: brew install nvchecker
 make check-updates
 # or: ./scripts/check-updates.py
 ```

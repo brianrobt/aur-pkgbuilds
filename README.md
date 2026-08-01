@@ -59,7 +59,7 @@ See [`.github/workflows/README.md`](.github/workflows/README.md).
 - Git
 - SSH key registered on your AUR account (for `make push`)
 - Docker (optional; used by CI verify, not required locally)
-- `nvchecker` (optional locally; `brew install nvchecker` / `pip install nvchecker`)
+- `nvchecker` (optional locally; `brew install nvchecker`, or `pip install .` from this repo)
 
 ## Contributing
 
