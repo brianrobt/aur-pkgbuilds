@@ -76,6 +76,7 @@ Add these secrets to your GitHub repository settings:
    - Go to https://aur.archlinux.org/account/
    - Add the SSH key to your account
 
+<<<<<<< Updated upstream
 3. Add the private key to GitHub secrets:
    - Copy the contents of `~/.ssh/aur_key`
    - Add as `AUR_SSH_PRIVATE_KEY` secret
@@ -149,6 +150,12 @@ Edit the `cron` expression in the workflow file:
 ```yaml
 schedule:
   - cron: '0 2 * * *'  # Daily at 2 AM UTC
+=======
+```bash
+brew install nvchecker   # or: pip install nvchecker
+make check-updates
+# or: ./scripts/check-updates.py
+>>>>>>> Stashed changes
 ```
 
 ## Update GitHub Packages Workflow

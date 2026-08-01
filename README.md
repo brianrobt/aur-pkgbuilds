@@ -40,7 +40,11 @@ make push-all
 make clean
 ```
 
+<<<<<<< Updated upstream
 Scripts: `scripts/import-from-aur.sh`, `scripts/update-pkgbuild.sh`, `scripts/push-to-aur.sh`.
+=======
+Scripts: `scripts/import-from-aur.sh`, `scripts/update-pkgbuild.py`, `scripts/push-to-aur.sh`, `scripts/check-updates.py`.
+>>>>>>> Stashed changes
 
 ## GitHub Actions
 

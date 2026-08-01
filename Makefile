@@ -70,7 +70,7 @@ update:
 	@args="$(PKG) --version $(VER)"; \
 	if [ -n "$(PKGREL)" ]; then args="$$args --pkgrel $(PKGREL)"; fi; \
 	if [ "$(DOCKER)" = "1" ]; then args="$$args --docker"; fi; \
-	$(SCRIPTS)/update-pkgbuild.sh $$args
+	$(SCRIPTS)/update-pkgbuild.py $$args
 
 refresh:
 	@if [ -z "$(PKG)" ]; then \
@@ -80,7 +80,7 @@ refresh:
 	@args="$(PKG)"; \
 	if [ -n "$(PKGREL)" ]; then args="$$args --pkgrel $(PKGREL)"; fi; \
 	if [ "$(DOCKER)" = "1" ]; then args="$$args --docker"; fi; \
-	$(SCRIPTS)/update-pkgbuild.sh $$args
+	$(SCRIPTS)/update-pkgbuild.py $$args
 
 push:
 	@if [ -z "$(PKG)" ]; then \
@@ -96,6 +96,12 @@ push-all:
 	if [ "$(DRY_RUN)" = "1" ]; then args="--dry-run $$args"; fi; \
 	$(SCRIPTS)/push-to-aur.sh $$args
 
+<<<<<<< Updated upstream
+=======
+check-updates:
+	@$(SCRIPTS)/check-updates.py
+
+>>>>>>> Stashed changes
 clean:
 	@echo "Removing makepkg artifacts under $(PACKAGES_DIR)/ ..."
 	@rm -rf $(PACKAGES_DIR)/*/src \

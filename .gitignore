@@ -11,3 +11,4 @@ packages/**/*.log
 packages/**/*.tar.gz
 packages/**/*.tar.bz2
 packages/**/*.zip
+__pycache__/
