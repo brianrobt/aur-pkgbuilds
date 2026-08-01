@@ -1,0 +1,8 @@
+*
+!PKGBUILD
+!.SRCINFO
+!.gitignore
+!.nvchecker.toml
+!gvm2.install
+!gvm2-setup
+!gvm2.sh
