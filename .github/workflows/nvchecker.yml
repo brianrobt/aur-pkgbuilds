@@ -1,9 +1,9 @@
 name: Check package updates (nvchecker)
 
 on:
-  schedule:
-    # Daily at 14:00 UTC
-    - cron: "0 14 * * *"
+  # schedule:
+  #   # Daily at 14:00 UTC
+  #   - cron: "0 14 * * *"
   workflow_dispatch:
 
 permissions:
@@ -53,4 +53,3 @@ jobs:
           to: brianrobt@pm.me
           from: "AUR nvchecker <${{ secrets.MAIL_USERNAME }}>"
           body: file://${{ runner.temp }}/nvchecker-body.txt
- 
